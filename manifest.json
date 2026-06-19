@@ -1,0 +1,27 @@
+{
+  "name": "Test Oluşturucu",
+  "short_name": "TestApp",
+  "description": "PDF ve görsellerden A4 sınav kağıdı oluşturun",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a7fa8",
+  "theme_color": "#1a7fa8",
+  "orientation": "portrait",
+  "lang": "tr",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["education", "productivity"]
+}
