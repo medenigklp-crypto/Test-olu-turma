@@ -48,19 +48,24 @@
     #viewer-screen.active { display: flex; }
 
     #viewer-toolbar {
-      background: #fff; border-bottom: 1px solid #e0e0e0;
-      padding: 6px 8px; display: flex; align-items: center; gap: 5px; overflow-x: auto;
+      background: #fff; border-bottom: 2px solid #e0e0e0;
+      display: flex; flex-direction: column;
     }
+    .tb-row {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 10px;
+    }
+    .tb-row + .tb-row { border-top: 1px solid #f0f0f0; }
     #viewer-toolbar button {
       background: #e8f4f8; border: none; border-radius: 8px;
-      padding: 7px 11px; cursor: pointer; font-size: 13px; font-weight: 600; color: #1a7fa8;
+      padding: 9px 16px; cursor: pointer; font-size: 15px; font-weight: 700; color: #1a7fa8;
       white-space: nowrap; flex-shrink: 0;
     }
     #viewer-toolbar button.primary { background: #1a7fa8; color: #fff; }
     #viewer-toolbar button.warn    { background: #f0a500; color: #fff; }
     #viewer-toolbar button:disabled { opacity: .4; cursor: default; }
-    #page-info { font-size: 12px; color: #555; flex-shrink: 0; font-weight: 600; }
-    #zoom-info { font-size: 11px; color: #888; flex-shrink: 0; min-width: 36px; text-align: center; }
+    #page-info { font-size: 14px; color: #333; flex: 1; text-align: center; font-weight: 700; }
+    #zoom-info { font-size: 14px; color: #333; font-weight: 700; min-width: 48px; text-align: center; }
 
     #canvas-wrap {
       flex: 1; overflow: auto; background: #555;
@@ -155,16 +160,21 @@
 <!-- VIEWER -->
 <div id="viewer-screen" class="screen">
   <div id="viewer-toolbar">
-    <button id="btn-prev" onclick="changePage(-1)" disabled>◀</button>
-    <span id="page-info">— / —</span>
-    <button id="btn-next" onclick="changePage(1)" disabled>▶</button>
-    <span style="flex:1"></span>
-    <button onclick="zoomOut()">−</button>
-    <span id="zoom-info">100%</span>
-    <button onclick="zoomIn()">+</button>
-    <button onclick="zoomReset()">↺</button>
-    <button id="btn-mode" class="primary" onclick="toggleMode()">✂️ Seç</button>
-    <button id="btn-go" class="warn" onclick="goSettings()" disabled>⚙️(<span id="q-count">0</span>)</button>
+    <!-- Satır 1: Sayfa geçiş -->
+    <div class="tb-row">
+      <button id="btn-prev" onclick="changePage(-1)" disabled>◀ Önceki</button>
+      <span id="page-info">— / —</span>
+      <button id="btn-next" onclick="changePage(1)" disabled>Sonraki ▶</button>
+    </div>
+    <!-- Satır 2: Zoom + Mod + Devam -->
+    <div class="tb-row">
+      <button onclick="zoomOut()" style="padding:9px 18px;font-size:18px;">−</button>
+      <span id="zoom-info">100%</span>
+      <button onclick="zoomIn()" style="padding:9px 18px;font-size:18px;">+</button>
+      <button onclick="zoomReset()">↺</button>
+      <button id="btn-mode" class="primary" onclick="toggleMode()">✂️ Seç</button>
+      <button id="btn-go" class="warn" onclick="goSettings()" disabled>⚙️ (<span id="q-count">0</span>)</button>
+    </div>
   </div>
   <div id="canvas-wrap">
     <div id="canvas-container">
