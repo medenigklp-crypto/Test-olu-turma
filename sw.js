@@ -1,4 +1,4 @@
-const CACHE_NAME = 'test-olusturucu-v1';
+const CACHE_NAME = 'test-olusturucu-v3';
 const ASSETS = [
   './',
   './index.html',
