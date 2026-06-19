@@ -525,7 +525,7 @@ function generateTest(){
       globalIdx++;
       qHtmlAll += `
         <div class="q-box" style="width:${colW};">
-          <div class="q-num">${globalIdx}. Soru</div>
+          <div class="q-num">${globalIdx}. Soru${showPt ? ` <span class="q-pt">${pt} puan</span>` : ''}</div>
           <img src="${q.dataUrl}" style="width:100%;border-radius:2px;display:block;" />
           ${ansKey?`<div class="ans-box">Cevap: ____</div>`:''}
         </div>`;
@@ -573,7 +573,7 @@ body{font-family:'Times New Roman',serif;font-size:11pt;color:#111}
 </style></head><body><div class="page">
 <div class="header">
 ${school?`<div class="school">${school}</div>`:''}
-<div class="title">${title}</div>
+${title?`<div class="title">${title}</div>`:''}
 <div class="meta-row">
   <span>${subject?`<b>Ders:</b> ${subject}`:''} ${topic?`&nbsp;|&nbsp; <b>Konu:</b> ${topic}`:''}</span>
   ${testno?`<span class="badge">${testno}</span>`:''}
