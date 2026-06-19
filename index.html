@@ -10,147 +10,99 @@
   <link rel="apple-touch-icon" href="icon-192.png" />
   <title>Test Oluşturucu</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f0f4f8; }
-
-    #header {
-      background: #1a7fa8; color: #fff;
-      padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top));
-      display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 200;
-    }
-    #header h1 { font-size: 16px; font-weight: 700; }
-    #header p  { font-size: 11px; opacity: .8; }
-    #btn-upload-top {
-      margin-left: auto; background: #fff; color: #1a7fa8;
-      border: none; border-radius: 20px; padding: 7px 14px;
-      font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap;
-    }
-
-    .screen { display: none; }
-    .screen.active { display: block; }
-
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f4f8;}
+    /* HEADER */
+    #header{background:#1a7fa8;color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;}
+    #header h1{font-size:16px;font-weight:700;}
+    #header p{font-size:11px;opacity:.8;}
+    #btn-upload-top{margin-left:auto;background:#fff;color:#1a7fa8;border:none;border-radius:20px;padding:7px 14px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;}
+    .screen{display:none;}
+    .screen.active{display:block;}
     /* UPLOAD */
-    #upload-screen { padding: 24px 16px; }
-    #drop-zone {
-      border: 2px dashed #1a7fa8; border-radius: 16px;
-      padding: 52px 20px; text-align: center; background: #fff; cursor: pointer;
-    }
-    #drop-zone .icon { font-size: 52px; }
-    #drop-zone h2 { font-size: 18px; font-weight: 700; color: #1a7fa8; margin: 10px 0 4px; }
-    #drop-zone p  { color: #888; font-size: 13px; }
-    #loading-bar { display: none; margin-top: 20px; background: #fff; border-radius: 12px; padding: 20px; text-align: center; }
-    #loading-bar p { color: #1a7fa8; font-weight: 600; margin-top: 8px; }
-    .spinner { width: 36px; height: 36px; border: 4px solid #e0e0e0; border-top-color: #1a7fa8; border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
+    #upload-screen{padding:20px 16px;}
+    .upload-card{border:2px dashed #1a7fa8;border-radius:16px;padding:36px 20px;text-align:center;background:#fff;cursor:pointer;margin-bottom:12px;}
+    .upload-card .icon{font-size:40px;}
+    .upload-card h2{font-size:16px;font-weight:700;color:#1a7fa8;margin:8px 0 3px;}
+    .upload-card p{color:#888;font-size:12px;}
+    .upload-card.photo{border-color:#aaa;}
+    .upload-card.photo h2{color:#555;}
+    #loading-bar{display:none;margin-top:16px;background:#fff;border-radius:12px;padding:20px;text-align:center;}
+    #loading-bar p{color:#1a7fa8;font-weight:600;margin-top:8px;}
+    .spinner{width:36px;height:36px;border:4px solid #e0e0e0;border-top-color:#1a7fa8;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
+    @keyframes spin{to{transform:rotate(360deg);}}
     /* VIEWER */
-    #viewer-screen { display: none; flex-direction: column; height: calc(100vh - 56px); }
-    #viewer-screen.active { display: flex; }
-
-    #viewer-toolbar {
-      background: #fff; border-bottom: 2px solid #e0e0e0;
-      display: flex; flex-direction: column;
-    }
-    .tb-row {
-      display: flex; align-items: center; gap: 6px;
-      padding: 7px 10px;
-    }
-    .tb-row + .tb-row { border-top: 1px solid #f0f0f0; }
-    #viewer-toolbar button {
-      background: #e8f4f8; border: none; border-radius: 8px;
-      padding: 9px 16px; cursor: pointer; font-size: 15px; font-weight: 700; color: #1a7fa8;
-      white-space: nowrap; flex-shrink: 0;
-    }
-    #viewer-toolbar button.primary { background: #1a7fa8; color: #fff; }
-    #viewer-toolbar button.warn    { background: #f0a500; color: #fff; }
-    #viewer-toolbar button:disabled { opacity: .4; cursor: default; }
-    #page-info { font-size: 14px; color: #333; flex: 1; text-align: center; font-weight: 700; }
-    #zoom-info { font-size: 14px; color: #333; font-weight: 700; min-width: 48px; text-align: center; }
-
-    #canvas-wrap {
-      flex: 1; overflow: auto; background: #555;
-      display: flex; justify-content: center; align-items: flex-start; padding: 10px;
-      -webkit-overflow-scrolling: touch;
-    }
-    #canvas-container { position: relative; display: inline-block; align-self: flex-start; }
-    #pdf-canvas { display: block; }
-    #select-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; }
-    #sel-box {
-      position: absolute; border: 2.5px solid #e74c3c;
-      background: rgba(231,76,60,.12); pointer-events: none; display: none; border-radius: 2px;
-    }
-
-    /* QUESTIONS BAR */
-    #questions-bar {
-      background: #fff; border-top: 2px solid #1a7fa8;
-      padding: 8px 12px; max-height: 150px; overflow-y: auto;
-    }
-    #questions-bar h3 { font-size: 11px; font-weight: 700; color: #1a7fa8; margin-bottom: 5px; }
-    #q-list { display: flex; flex-wrap: wrap; gap: 6px; min-height: 16px; }
-    .q-thumb { position: relative; border: 2px solid #1a7fa8; border-radius: 6px; overflow: hidden; }
-    .q-thumb img { display: block; height: 60px; width: auto; max-width: 130px; object-fit: contain; background: #fff; }
-    .q-thumb .del {
-      position: absolute; top: 2px; right: 2px; background: rgba(200,0,0,.85); color: #fff;
-      border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 11px;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-    }
-    #q-empty { color: #bbb; font-size: 12px; font-style: italic; }
-
+    #viewer-screen{display:none;flex-direction:column;height:calc(100vh - 56px);}
+    #viewer-screen.active{display:flex;}
+    #viewer-toolbar{background:#fff;border-bottom:2px solid #e0e0e0;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;z-index:100;}
+    .tb-row{display:flex;align-items:center;gap:5px;padding:7px 8px;}
+    .tb-row+.tb-row{border-top:1px solid #f0f0f0;}
+    #viewer-toolbar button{background:#e8f4f8;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;font-weight:700;color:#1a7fa8;white-space:nowrap;flex-shrink:0;}
+    #viewer-toolbar button.primary{background:#1a7fa8;color:#fff;}
+    #viewer-toolbar button.warn{background:#f0a500;color:#fff;}
+    #viewer-toolbar button:disabled{opacity:.4;cursor:default;}
+    #page-info{font-size:13px;color:#333;flex:1;text-align:center;font-weight:700;}
+    #zoom-info{font-size:13px;color:#333;font-weight:700;min-width:46px;text-align:center;background:#f5f5f5;border-radius:6px;padding:4px 6px;}
+    #canvas-wrap{flex:1;overflow:auto;background:#555;display:flex;justify-content:center;align-items:flex-start;padding:10px;-webkit-overflow-scrolling:touch;}
+    #canvas-container{position:relative;display:inline-block;align-self:flex-start;}
+    #pdf-canvas{display:block;}
+    #select-canvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none;}
+    #sel-box{position:absolute;border:2.5px solid #e74c3c;background:rgba(231,76,60,.12);pointer-events:none;display:none;border-radius:2px;}
+    /* Q BAR */
+    #questions-bar{background:#fff;border-top:2px solid #1a7fa8;padding:8px 12px;max-height:150px;overflow-y:auto;flex-shrink:0;}
+    #questions-bar h3{font-size:11px;font-weight:700;color:#1a7fa8;margin-bottom:5px;}
+    #q-list{display:flex;flex-wrap:wrap;gap:6px;min-height:16px;}
+    .q-thumb{position:relative;border:2px solid #1a7fa8;border-radius:6px;overflow:hidden;}
+    .q-thumb img{display:block;height:60px;width:auto;max-width:130px;object-fit:contain;background:#fff;}
+    .q-thumb .del{position:absolute;top:2px;right:2px;background:rgba(200,0,0,.85);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    #q-empty{color:#bbb;font-size:12px;font-style:italic;}
     /* FAB */
-    #fab {
-      position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); right: 16px; z-index: 300;
-      background: #f0a500; color: #fff; border: none; border-radius: 28px;
-      padding: 13px 18px; font-size: 14px; font-weight: 700; cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,.25); display: none;
-    }
-
+    #fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));right:16px;z-index:300;background:#f0a500;color:#fff;border:none;border-radius:28px;padding:13px 18px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:none;}
     /* SETTINGS */
-    #settings-screen { padding: 16px; overflow-y: auto; max-height: calc(100vh - 56px); }
-    #settings-screen h2 { font-size: 17px; font-weight: 700; color: #1a7fa8; margin-bottom: 14px; }
-    .field { margin-bottom: 11px; }
-    .field label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 3px; }
-    .field input, .field select {
-      width: 100%; padding: 10px 12px; border: 1px solid #ddd;
-      border-radius: 8px; font-size: 14px; outline: none; background: #fff;
-    }
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .field-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    .check-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-    .check-row input { width: 18px; height: 18px; }
-    .section-title {
-      font-size: 11px; font-weight: 700; color: #1a7fa8; text-transform: uppercase;
-      letter-spacing: .5px; margin: 14px 0 8px; border-bottom: 1px solid #e0f0f8; padding-bottom: 4px;
-    }
-    .btn-primary { width: 100%; background: #1a7fa8; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; }
-    .btn-secondary { width: 100%; background: #f0f0f0; border: none; border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
-
+    #settings-screen{padding:16px;overflow-y:auto;max-height:calc(100vh - 56px);}
+    #settings-screen h2{font-size:17px;font-weight:700;color:#1a7fa8;margin-bottom:14px;}
+    .field{margin-bottom:11px;}
+    .field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:3px;}
+    .field input,.field select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;background:#fff;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .check-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+    .check-row input{width:18px;height:18px;}
+    .sec-title{font-size:11px;font-weight:700;color:#1a7fa8;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;border-bottom:1px solid #e0f0f8;padding-bottom:4px;}
+    .btn-primary{width:100%;background:#1a7fa8;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;}
+    .btn-secondary{width:100%;background:#f0f0f0;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px;}
     /* PREVIEW */
-    #preview-screen { padding: 14px; }
-    #preview-screen h2 { font-size: 17px; font-weight: 700; color: #1a7fa8; margin-bottom: 10px; }
-    #preview-actions { display: flex; gap: 8px; margin-bottom: 12px; }
-    #preview-actions button { flex: 1; border: none; border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 700; cursor: pointer; }
-    #btn-print { background: #1a7fa8; color: #fff; }
-    #btn-back-preview { background: #f0f0f0; color: #333; }
-    #btn-new { background: #e8f7ff; color: #1a7fa8; }
-    #preview-frame { width: 100%; height: 72vh; border: none; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,.15); }
+    #preview-screen{padding:14px;}
+    #preview-screen h2{font-size:17px;font-weight:700;color:#1a7fa8;margin-bottom:10px;}
+    #preview-actions{display:flex;gap:8px;margin-bottom:12px;}
+    #preview-actions button{flex:1;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;}
+    #btn-print{background:#1a7fa8;color:#fff;}
+    #btn-back-preview{background:#f0f0f0;color:#333;}
+    #btn-new{background:#e8f7ff;color:#1a7fa8;}
+    #preview-frame{width:100%;height:72vh;border:none;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.15);}
   </style>
 </head>
 <body>
-
 <div id="header">
-  <div><h1>📄 Test Oluşturucu</h1><p>PDF'den alan seç → A4 test oluştur</p></div>
-  <button id="btn-upload-top" onclick="showUpload()">+ PDF Yükle</button>
+  <div><h1>📄 Test Oluşturucu</h1><p>PDF veya foto seç → A4 test oluştur</p></div>
+  <button id="btn-upload-top" onclick="showUpload()">+ Yükle</button>
 </div>
 
 <!-- UPLOAD -->
 <div id="upload-screen" class="screen active">
-  <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+  <div class="upload-card" onclick="document.getElementById('file-input').click()">
     <div class="icon">📎</div>
     <h2>PDF Yükle</h2>
-    <p>Tıkla veya sürükle bırak</p>
-    <p style="margin-top:6px;font-size:12px;color:#bbb">PDF dosyası seçin</p>
+    <p>Tıkla — PDF dosyası seçin</p>
   </div>
   <input id="file-input" type="file" accept="application/pdf" style="display:none" onchange="loadPDF(this)"/>
+
+  <div class="upload-card photo" onclick="document.getElementById('photo-input').click()">
+    <div class="icon">🖼️</div>
+    <h2>Galeriden Fotoğraf Ekle</h2>
+    <p>PNG, JPG — birden fazla seçebilirsiniz</p>
+  </div>
+  <input id="photo-input" type="file" accept="image/*" multiple style="display:none" onchange="loadPhotos(this)"/>
+
   <div id="loading-bar">
     <div class="spinner"></div>
     <p id="loading-text">PDF yükleniyor...</p>
@@ -160,20 +112,18 @@
 <!-- VIEWER -->
 <div id="viewer-screen" class="screen">
   <div id="viewer-toolbar">
-    <!-- Satır 1: Sayfa geçiş -->
     <div class="tb-row">
       <button id="btn-prev" onclick="changePage(-1)" disabled>◀ Önceki</button>
       <span id="page-info">— / —</span>
       <button id="btn-next" onclick="changePage(1)" disabled>Sonraki ▶</button>
     </div>
-    <!-- Satır 2: Zoom + Mod + Devam -->
     <div class="tb-row">
-      <button onclick="zoomOut()" style="padding:9px 18px;font-size:18px;">−</button>
+      <button onclick="zoomOut()" style="font-size:18px;padding:8px 16px;">−</button>
       <span id="zoom-info">100%</span>
-      <button onclick="zoomIn()" style="padding:9px 18px;font-size:18px;">+</button>
+      <button onclick="zoomIn()" style="font-size:18px;padding:8px 16px;">+</button>
       <button onclick="zoomReset()">↺</button>
       <button id="btn-mode" class="primary" onclick="toggleMode()">✂️ Seç</button>
-      <button id="btn-go" class="warn" onclick="goSettings()" disabled>⚙️ (<span id="q-count">0</span>)</button>
+      <button id="btn-go" class="warn" onclick="goSettings()" disabled>⚙️(<span id="q-count">0</span>)</button>
     </div>
   </div>
   <div id="canvas-wrap">
@@ -184,7 +134,7 @@
     </div>
   </div>
   <div id="questions-bar">
-    <h3>Seçilen: <span id="q-count2">0</span> soru &nbsp;|&nbsp; ✂️ modda kare çizin</h3>
+    <h3>Seçilen: <span id="q-count2">0</span> soru &nbsp;|&nbsp; ✂️ modda parmakla kare çizin</h3>
     <div id="q-list"><span id="q-empty">Henüz soru seçilmedi</span></div>
   </div>
 </div>
@@ -193,8 +143,7 @@
 <div id="settings-screen" class="screen">
   <button class="btn-secondary" onclick="showViewer()">← Geri</button>
   <h2>Test Ayarları</h2>
-
-  <div class="section-title">📋 Okul Bilgileri</div>
+  <div class="sec-title">📋 Okul Bilgileri</div>
   <div class="field-row">
     <div class="field"><label>Okul Adı</label><input id="f-school" placeholder="Okul adı"/></div>
     <div class="field"><label>Sınıf / Şube</label><input id="f-class" placeholder="9-A"/></div>
@@ -203,21 +152,18 @@
     <div class="field"><label>Öğretmen</label><input id="f-teacher" placeholder="Ad Soyad"/></div>
     <div class="field"><label>Tarih</label><input id="f-date"/></div>
   </div>
-
-  <div class="section-title">📝 Test Bilgileri</div>
-  <div class="field"><label>Test Başlığı</label><input id="f-title" placeholder="1. Dönem Yazılı Sınavı"/></div>
+  <div class="sec-title">📝 Test Bilgileri</div>
+  <div class="field"><label>Test Başlığı</label><input id="f-title" placeholder="Boş bırakırsanız başlık çıkmaz"/></div>
   <div class="field-row">
-    <div class="field"><label>Ders Adı</label><input id="f-subject" placeholder="Matematik"/></div>
-    <div class="field"><label>Konu Adı</label><input id="f-topic" placeholder="Denklemler"/></div>
+    <div class="field"><label>Ders Adı</label><input id="f-subject" placeholder="Kimya"/></div>
+    <div class="field"><label>Konu Adı</label><input id="f-topic" placeholder="Asit Baz"/></div>
   </div>
   <div class="field-row">
     <div class="field"><label>Test No</label>
       <select id="f-testno">
         <option value="">— Yok —</option>
-        <option value="TEST 1">TEST 1</option>
-        <option value="TEST 2">TEST 2</option>
-        <option value="TEST 3">TEST 3</option>
-        <option value="TEST 4">TEST 4</option>
+        <option value="TEST 1">TEST 1</option><option value="TEST 2">TEST 2</option>
+        <option value="TEST 3">TEST 3</option><option value="TEST 4">TEST 4</option>
         <option value="TEST 5">TEST 5</option>
         <option value="A KİTAPÇIĞI">A KİTAPÇIĞI</option>
         <option value="B KİTAPÇIĞI">B KİTAPÇIĞI</option>
@@ -225,39 +171,23 @@
     </div>
     <div class="field"><label>Soru Puanı</label><input id="f-point" placeholder="Otomatik" type="number"/></div>
   </div>
-
-  <div class="section-title">📐 Düzen</div>
+  <div class="sec-title">📐 Düzen</div>
   <div class="field-row">
     <div class="field"><label>Sütun Sayısı</label>
-      <select id="f-cols">
-        <option value="1">1 Sütun</option>
-        <option value="2" selected>2 Sütun</option>
-      </select>
+      <select id="f-cols"><option value="1">1 Sütun</option><option value="2" selected>2 Sütun</option></select>
     </div>
     <div class="field"><label>Sayfa Başı Max Soru</label>
       <select id="f-perpage">
-        <option value="auto" selected>Otomatik (sığdığı kadar)</option>
-        <option value="2">2 soru</option>
-        <option value="3">3 soru</option>
-        <option value="4">4 soru</option>
-        <option value="5">5 soru</option>
+        <option value="auto" selected>Otomatik</option>
+        <option value="2">2 soru</option><option value="3">3 soru</option>
+        <option value="4">4 soru</option><option value="5">5 soru</option>
         <option value="6">6 soru</option>
       </select>
     </div>
   </div>
-  <div class="check-row">
-    <input type="checkbox" id="f-showpt"/>
-    <label for="f-showpt">Her soruda puan göster</label>
-  </div>
-  <div class="check-row">
-    <input type="checkbox" id="f-anskey"/>
-    <label for="f-anskey">Her soruya cevap kutusu ekle</label>
-  </div>
-  <div class="check-row">
-    <input type="checkbox" id="f-anspage"/>
-    <label for="f-anspage">Sona ayrı cevap anahtarı sayfası ekle</label>
-  </div>
-
+  <div class="check-row"><input type="checkbox" id="f-showpt"/><label for="f-showpt">Her soruda puan göster</label></div>
+  <div class="check-row"><input type="checkbox" id="f-anskey"/><label for="f-anskey">Her soruya cevap kutusu ekle</label></div>
+  <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Sona cevap anahtarı sayfası ekle</label></div>
   <button class="btn-primary" onclick="generateTest()">📄 Testi Oluştur</button>
 </div>
 
@@ -275,19 +205,20 @@
 <button id="fab" onclick="goSettings()">⚙️ Test Oluştur (<span id="fab-count">0</span>)</button>
 
 <script>
+// PDF.js
 (function(){
-  const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-  s.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; };
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';};
   document.head.appendChild(s);
 })();
 
-let pdfDoc=null, currentPage=1, totalPages=0;
-let currentScale=1, baseScale=1;
-let isSelectMode=true, selecting=false;
+let pdfDoc=null,currentPage=1,totalPages=0;
+let currentScale=1,baseScale=1;
+let isSelectMode=true,selecting=false;
 let startX=0,startY=0,curX=0,curY=0;
-let selectedQuestions=[], renderTask=null;
-let pinching=false, pinchStartDist=0, pinchStartScale=1;
+let selectedQuestions=[],renderTask=null;
+let pinching=false,pinchStartDist=0,pinchStartScale=1;
 
 const pdfCanvas=document.getElementById('pdf-canvas');
 const selCanvas=document.getElementById('select-canvas');
@@ -314,10 +245,9 @@ function goSettings(){
 }
 function startNew(){selectedQuestions=[];pdfDoc=null;updateQList();showUpload();}
 
-// PDF LOAD
+// LOAD PDF
 async function loadPDF(input){
   const file=input.files[0]; if(!file) return;
-  document.getElementById('drop-zone').style.display='none';
   document.getElementById('loading-bar').style.display='block';
   document.getElementById('loading-text').textContent='PDF okunuyor...';
   try{
@@ -325,35 +255,53 @@ async function loadPDF(input){
     if(typeof pdfjsLib==='undefined') await new Promise(r=>setTimeout(r,1500));
     pdfDoc=await pdfjsLib.getDocument({data:ab}).promise;
     totalPages=pdfDoc.numPages; currentPage=1;
-    selectedQuestions=[]; updateQList();
-    document.getElementById('loading-bar').style.display='none';
-    document.getElementById('drop-zone').style.display='block';
     const page=await pdfDoc.getPage(1);
     const vp0=page.getViewport({scale:1});
     baseScale=(window.innerWidth-20)/vp0.width;
     currentScale=baseScale;
+    document.getElementById('loading-bar').style.display='none';
     showViewer();
     await renderPage(currentPage);
   }catch(e){document.getElementById('loading-text').textContent='Hata: '+e.message;}
 }
 
+// LOAD PHOTOS — doğrudan soru olarak ekle
+function loadPhotos(input){
+  const files=Array.from(input.files);
+  if(!files.length) return;
+  let loaded=0;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      selectedQuestions.push({dataUrl:e.target.result,pageNum:'foto',w:0,h:0});
+      loaded++;
+      if(loaded===files.length){
+        updateQList();
+        // viewer yoksa ayarlara git
+        if(!pdfDoc){
+          document.getElementById('f-date').value=new Date().toLocaleDateString('tr-TR');
+          showSettings();
+        } else {
+          showViewer();
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// RENDER PAGE
 async function renderPage(num){
   if(!pdfDoc) return;
   if(renderTask){try{renderTask.cancel();}catch(_){}renderTask=null;}
   const page=await pdfDoc.getPage(num);
-  const dpr = Math.max(window.devicePixelRatio || 2, 3);
-  const renderScale = currentScale * dpr;
-  const vp=page.getViewport({scale:renderScale});
-  // Canvas actual pixels = high-res
+  const dpr=Math.max(window.devicePixelRatio||2,3);
+  const vp=page.getViewport({scale:currentScale*dpr});
   pdfCanvas.width=vp.width; pdfCanvas.height=vp.height;
-  // Display size = logical pixels
-  const displayW = vp.width / dpr;
-  const displayH = vp.height / dpr;
-  pdfCanvas.style.width  = displayW + 'px';
-  pdfCanvas.style.height = displayH + 'px';
+  const dw=vp.width/dpr, dh=vp.height/dpr;
+  pdfCanvas.style.width=dw+'px'; pdfCanvas.style.height=dh+'px';
   selCanvas.width=vp.width; selCanvas.height=vp.height;
-  selCanvas.style.width  = displayW + 'px';
-  selCanvas.style.height = displayH + 'px';
+  selCanvas.style.width=dw+'px'; selCanvas.style.height=dh+'px';
   renderTask=page.render({canvasContext:ctx,viewport:vp});
   await renderTask.promise; renderTask=null;
   document.getElementById('page-info').textContent=num+'/'+totalPages;
@@ -363,19 +311,94 @@ async function renderPage(num){
 }
 
 function changePage(d){const n=currentPage+d;if(n<1||n>totalPages)return;currentPage=n;renderPage(n);}
-function zoomIn(){currentScale=Math.min(currentScale*1.3,baseScale*5);renderPage(currentPage);}
-function zoomOut(){currentScale=Math.max(currentScale/1.3,baseScale*0.5);renderPage(currentPage);}
+
+// ZOOM — %5 adım
+function zoomIn(){currentScale=Math.min(currentScale*1.05,baseScale*6);renderPage(currentPage);}
+function zoomOut(){currentScale=Math.max(currentScale/1.05,baseScale*0.4);renderPage(currentPage);}
 function zoomReset(){currentScale=baseScale;renderPage(currentPage);}
 
-// Pinch bitti → render
-document.addEventListener('touchend', e=>{
-  if(pinching && (!e.touches || e.touches.length<2)){
-    pinching=false;
-    renderPage(currentPage);
+// SELECT + PINCH — canvas üzerinde her ikisi çalışır
+selCanvas.addEventListener('touchstart',e=>{
+  if(e.touches.length>=2){
+    selecting=false;selBox.style.display='none';
+    pinching=true;
+    pinchStartDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    pinchStartScale=currentScale;
+    e.preventDefault();return;
   }
+  if(!isSelectMode) return;
+  e.preventDefault();selecting=true;
+  const p=getPos(e);startX=curX=p.cx;startY=curY=p.cy;
+  selBox.style.cssText='display:block;left:'+p.rx+'px;top:'+p.ry+'px;width:0;height:0;';
+},{passive:false});
+
+selCanvas.addEventListener('touchmove',e=>{
+  if(e.touches.length>=2){
+    selecting=false;selBox.style.display='none';
+    if(!pinching){
+      pinching=true;
+      pinchStartDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      pinchStartScale=currentScale;
+    }
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    currentScale=Math.min(Math.max(pinchStartScale*(d/pinchStartDist),baseScale*0.4),baseScale*6);
+    document.getElementById('zoom-info').textContent=Math.round(currentScale/baseScale*100)+'%';
+    e.preventDefault();return;
+  }
+  if(!selecting||pinching) return;
+  e.preventDefault();
+  const p=getPos(e);curX=p.cx;curY=p.cy;
+  selBox.style.left=Math.min(startX,curX)+'px';
+  selBox.style.top=Math.min(startY,curY)+'px';
+  selBox.style.width=Math.abs(curX-startX)+'px';
+  selBox.style.height=Math.abs(curY-startY)+'px';
+},{passive:false});
+
+document.addEventListener('touchend',e=>{
+  if(pinching&&(!e.touches||e.touches.length<2)){pinching=false;renderPage(currentPage);}
+  if(!selecting) return;
+  selecting=false;selBox.style.display='none';
+  cropSelection();
 });
 
-// SELECT
+selCanvas.addEventListener('mousedown',e=>{
+  if(!isSelectMode) return;
+  selecting=true;const p=getPos(e);startX=curX=p.cx;startY=curY=p.cy;
+  selBox.style.cssText='display:block;left:'+p.rx+'px;top:'+p.ry+'px;width:0;height:0;';
+});
+selCanvas.addEventListener('mousemove',e=>{
+  if(!selecting) return;
+  const p=getPos(e);curX=p.cx;curY=p.cy;
+  selBox.style.left=Math.min(startX,curX)+'px';
+  selBox.style.top=Math.min(startY,curY)+'px';
+  selBox.style.width=Math.abs(curX-startX)+'px';
+  selBox.style.height=Math.abs(curY-startY)+'px';
+});
+document.addEventListener('mouseup',e=>{
+  if(!selecting) return;selecting=false;selBox.style.display='none';cropSelection();
+});
+
+function getPos(e){
+  const r=selCanvas.getBoundingClientRect();
+  const src=e.touches?e.touches[0]:e;
+  const rx=src.clientX-r.left, ry=src.clientY-r.top;
+  const lw=parseFloat(selCanvas.style.width)||r.width;
+  const lh=parseFloat(selCanvas.style.height)||r.height;
+  return{cx:rx*(lw/r.width),cy:ry*(lh/r.height),rx,ry};
+}
+
+function cropSelection(){
+  const x=Math.min(startX,curX),y=Math.min(startY,curY);
+  const w=Math.abs(curX-startX),h=Math.abs(curY-startY);
+  if(w<15||h<15) return;
+  const dpr=Math.max(window.devicePixelRatio||2,3);
+  const tmp=document.createElement('canvas');
+  tmp.width=Math.round(w*dpr);tmp.height=Math.round(h*dpr);
+  tmp.getContext('2d').drawImage(pdfCanvas,Math.round(x*dpr),Math.round(y*dpr),Math.round(w*dpr),Math.round(h*dpr),0,0,Math.round(w*dpr),Math.round(h*dpr));
+  selectedQuestions.push({dataUrl:tmp.toDataURL('image/png'),pageNum:currentPage,w,h});
+  updateQList();
+}
+
 function toggleMode(){
   isSelectMode=!isSelectMode;
   const btn=document.getElementById('btn-mode');
@@ -383,84 +406,6 @@ function toggleMode(){
   btn.className=isSelectMode?'primary':'';
   selCanvas.style.pointerEvents=isSelectMode?'auto':'none';
   selCanvas.style.cursor=isSelectMode?'crosshair':'default';
-}
-function getPos(e){
-  const r=selCanvas.getBoundingClientRect();
-  const src=e.touches?e.touches[0]:e;
-  // logical pixels relative to displayed canvas
-  const rx=src.clientX-r.left;
-  const ry=src.clientY-r.top;
-  // scale to canvas coordinate space (logical)
-  const lw=parseFloat(selCanvas.style.width)||r.width;
-  const lh=parseFloat(selCanvas.style.height)||r.height;
-  return{cx:rx*(lw/r.width), cy:ry*(lh/r.height), rx, ry};
-}
-selCanvas.addEventListener('mousedown',onStart);
-selCanvas.addEventListener('touchstart',onStart,{passive:false});
-selCanvas.addEventListener('mousemove',onMove);
-selCanvas.addEventListener('touchmove',onMove,{passive:false});
-document.addEventListener('mouseup',onEnd);
-document.addEventListener('touchend',onEnd);
-
-function onStart(e){
-  // 2 parmak = pinch zoom, seçimi iptal et
-  if(e.touches && e.touches.length>=2){
-    selecting=false; selBox.style.display='none';
-    // pinch başlat
-    pinching=true;
-    pinchStartDist=Math.hypot(
-      e.touches[0].clientX-e.touches[1].clientX,
-      e.touches[0].clientY-e.touches[1].clientY);
-    pinchStartScale=currentScale;
-    e.preventDefault(); return;
-  }
-  if(!isSelectMode||pinching) return;
-  e.preventDefault(); selecting=true;
-  const p=getPos(e); startX=curX=p.cx; startY=curY=p.cy;
-  selBox.style.cssText=`display:block;left:${p.rx}px;top:${p.ry}px;width:0;height:0;`;
-}
-function onMove(e){
-  // 2 parmak = pinch zoom
-  if(e.touches && e.touches.length>=2){
-    selecting=false; selBox.style.display='none';
-    if(!pinching){
-      pinching=true;
-      pinchStartDist=Math.hypot(
-        e.touches[0].clientX-e.touches[1].clientX,
-        e.touches[0].clientY-e.touches[1].clientY);
-      pinchStartScale=currentScale;
-    }
-    const d=Math.hypot(
-      e.touches[0].clientX-e.touches[1].clientX,
-      e.touches[0].clientY-e.touches[1].clientY);
-    currentScale=Math.min(Math.max(pinchStartScale*(d/pinchStartDist),baseScale*0.5),baseScale*5);
-    document.getElementById('zoom-info').textContent=Math.round(currentScale/baseScale*100)+'%';
-    e.preventDefault(); return;
-  }
-  if(!selecting||pinching) return;
-  e.preventDefault();
-  const p=getPos(e); curX=p.cx; curY=p.cy;
-  const r=selCanvas.getBoundingClientRect();
-  selBox.style.left=Math.min(startX,curX)+'px';
-  selBox.style.top=Math.min(startY,curY)+'px';
-  selBox.style.width=Math.abs(curX-startX)+'px';
-  selBox.style.height=Math.abs(curY-startY)+'px';
-}
-function onEnd(e){
-  if(!selecting) return; selecting=false; selBox.style.display='none';
-  const x=Math.min(startX,curX),y=Math.min(startY,curY);
-  const w=Math.abs(curX-startX),h=Math.abs(curY-startY);
-  if(w<15||h<15) return;
-  const dpr = window.devicePixelRatio || 2;
-  // startX/curX are in canvas logical pixels; canvas actual pixels = *dpr
-  const tmp=document.createElement('canvas');
-  tmp.width=Math.round(w*dpr); tmp.height=Math.round(h*dpr);
-  tmp.getContext('2d').drawImage(pdfCanvas,
-    Math.round(x*dpr), Math.round(y*dpr),
-    Math.round(w*dpr), Math.round(h*dpr),
-    0, 0, Math.round(w*dpr), Math.round(h*dpr));
-  selectedQuestions.push({dataUrl:tmp.toDataURL('image/png'),pageNum:currentPage,w,h});
-  updateQList();
 }
 
 function updateQList(){
@@ -473,112 +418,99 @@ function updateQList(){
   list.innerHTML='';
   if(count===0){list.innerHTML='<span id="q-empty">Henüz soru seçilmedi</span>';return;}
   selectedQuestions.forEach((q,i)=>{
-    const div=document.createElement('div'); div.className='q-thumb';
-    const img=document.createElement('img'); img.src=q.dataUrl;
-    const btn=document.createElement('button'); btn.className='del'; btn.textContent='✕';
+    const div=document.createElement('div');div.className='q-thumb';
+    const img=document.createElement('img');img.src=q.dataUrl;
+    const btn=document.createElement('button');btn.className='del';btn.textContent='✕';
     btn.onclick=ev=>{ev.stopPropagation();selectedQuestions.splice(i,1);updateQList();};
-    div.append(img,btn); list.appendChild(div);
+    div.append(img,btn);list.appendChild(div);
   });
 }
 
-// GENERATE
+// GENERATE — soru numarası ile içerik aynı kutu içinde
 function generateTest(){
-  const school   = document.getElementById('f-school').value;
-  const cls      = document.getElementById('f-class').value;
-  const title    = document.getElementById('f-title').value;
-  const showPt   = document.getElementById('f-showpt').checked;
-  const subject  = document.getElementById('f-subject').value;
-  const topic    = document.getElementById('f-topic').value;
-  const testno   = document.getElementById('f-testno').value;
-  const teacher  = document.getElementById('f-teacher').value;
-  const date     = document.getElementById('f-date').value;
-  const cols     = parseInt(document.getElementById('f-cols').value);
-  const perpage  = document.getElementById('f-perpage').value;
-  const pt       = document.getElementById('f-point').value || Math.floor(100/(selectedQuestions.length||1));
-  const ansKey   = document.getElementById('f-anskey').checked;
-  const ansPage  = document.getElementById('f-anspage').checked;
+  const school  =document.getElementById('f-school').value;
+  const cls     =document.getElementById('f-class').value;
+  const title   =document.getElementById('f-title').value;
+  const subject =document.getElementById('f-subject').value;
+  const topic   =document.getElementById('f-topic').value;
+  const testno  =document.getElementById('f-testno').value;
+  const teacher =document.getElementById('f-teacher').value;
+  const date    =document.getElementById('f-date').value;
+  const cols    =parseInt(document.getElementById('f-cols').value);
+  const perpage =document.getElementById('f-perpage').value;
+  const pt      =document.getElementById('f-point').value||Math.floor(100/(selectedQuestions.length||1));
+  const showPt  =document.getElementById('f-showpt').checked;
+  const ansKey  =document.getElementById('f-anskey').checked;
+  const ansPage =document.getElementById('f-anspage').checked;
+  const colW    =cols===2?'calc(50% - 5px)':'100%';
 
-  // A4 page height in px at 96dpi ≈ 1122px, usable ≈ 900px after margins
-  // We use page-break logic via CSS
-  const colW = cols===2 ? 'calc(50% - 5px)' : '100%';
-
-  // Group questions into pages if perpage is set
-  let qGroups = [];
-  if(perpage === 'auto'){
-    qGroups = [selectedQuestions]; // single group, browser handles pages
+  // Grup: perpage
+  let groups=[];
+  if(perpage==='auto'){
+    groups=[selectedQuestions];
   } else {
-    const pp = parseInt(perpage);
-    for(let i=0;i<selectedQuestions.length;i+=pp){
-      qGroups.push(selectedQuestions.slice(i,i+pp));
-    }
+    const pp=parseInt(perpage);
+    for(let i=0;i<selectedQuestions.length;i+=pp) groups.push(selectedQuestions.slice(i,i+pp));
   }
 
-  let qHtmlAll = '';
-  let globalIdx = 0;
-
-  qGroups.forEach((group, gi) => {
-    const pageBreak = gi > 0 ? 'page-break-before:always;' : '';
-    qHtmlAll += `<div class="q-page" style="${pageBreak}">`;
-    // wrap questions in flex container
-    qHtmlAll += `<div class="wrap">`;
-    group.forEach((q) => {
-      globalIdx++;
-      qHtmlAll += `
-        <div class="q-box" style="width:${colW};">
-          <div class="q-num">${globalIdx}. Soru${showPt ? ` <span class="q-pt">${pt} puan</span>` : ''}</div>
-          <img src="${q.dataUrl}" style="width:100%;border-radius:2px;display:block;" />
-          ${ansKey?`<div class="ans-box">Cevap: ____</div>`:''}
-        </div>`;
+  let qHtmlAll='',gi=0;
+  groups.forEach((grp,pi)=>{
+    const pb=pi>0?'page-break-before:always;':'';
+    qHtmlAll+=`<div style="${pb}display:flex;flex-wrap:wrap;gap:8px;padding-top:${pi>0?'10px':'0'}">`;
+    grp.forEach(q=>{
+      gi++;
+      // Soru numarası ve içerik AYNI div içinde — asla bölünmez
+      qHtmlAll+=`<div style="width:${colW};border:1px solid #ccc;border-radius:4px;
+        padding:8px;page-break-inside:avoid;break-inside:avoid;
+        background:#fafafa;position:relative;display:inline-block;vertical-align:top;margin-bottom:6px;">
+        <div style="font-weight:700;font-size:10pt;margin-bottom:5px;display:flex;justify-content:space-between;">
+          <span>${gi}. Soru</span>${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
+        </div>
+        <img src="${q.dataUrl}" style="width:100%;display:block;border-radius:2px;" />
+        ${ansKey?`<div style="margin-top:5px;border:1px solid #ccc;border-radius:3px;height:26px;display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;">Cevap: ____</div>`:''}
+      </div>`;
     });
-    qHtmlAll += `</div></div>`;
+    qHtmlAll+='</div>';
   });
 
-  // Answer key page
-  let ansPageHtml = '';
-  if(ansPage){
-    const akItems = selectedQuestions.map((_,i)=>`<span class="ak-item">${i+1}. ____</span>`).join('');
-    ansPageHtml = `
-      <div style="page-break-before:always;padding-top:10mm;">
-        <h2 style="text-align:center;font-size:14pt;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:12px;">CEVAP ANAHTARI</h2>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;">${akItems}</div>
-      </div>`;
-  }
+  const akHtml=ansPage?`<div style="page-break-before:always;padding-top:10mm;">
+    <h2 style="text-align:center;font-size:13pt;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:12px;">CEVAP ANAHTARI</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+    ${selectedQuestions.map((_,i)=>`<span style="min-width:60px;font-size:11pt;font-weight:700;border:1px solid #ccc;border-radius:4px;padding:4px 10px;text-align:center;">${i+1}. ____</span>`).join('')}
+    </div></div>`:'';
 
-  const html = `<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"/>
+  const html=`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Times New Roman',serif;font-size:11pt;color:#111}
-.page{width:210mm;min-height:297mm;margin:0 auto;padding:12mm 16mm;}
-.header{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:8px}
-.school{font-size:13pt;font-weight:700}
-.title{font-size:12pt;font-weight:700;margin:3px 0}
-.meta-row{display:flex;justify-content:space-between;font-size:10pt;margin:2px 0}
-.badge{background:#1a7fa8;color:#fff;border-radius:4px;padding:1px 8px;font-size:10pt;font-weight:700;}
+.page{width:210mm;min-height:297mm;margin:0 auto;padding:12mm 16mm}
+.header{border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:8px}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.school-block{flex:1}
+.school{font-size:12pt;font-weight:700}
+.title{font-size:11pt;margin:2px 0}
+.meta{font-size:10pt;color:#333}
+.badge{background:#1a7fa8;color:#fff;border-radius:4px;padding:2px 10px;font-size:11pt;font-weight:700;white-space:nowrap;}
 .info-t{width:100%;border-collapse:collapse;margin:6px 0;font-size:10pt}
 .info-t td{border:1px solid #000;padding:4px 8px}
 .info-t .lb{font-weight:700;width:80px}
-.note{font-size:9pt;font-style:italic;margin:3px 0 6px}
-.wrap{display:flex;flex-wrap:wrap;gap:8px;}
-.q-page{margin-bottom:0;}
-.q-box{border:1px solid #ccc;border-radius:4px;padding:8px;page-break-inside:avoid;
-       background:#fafafa;position:relative;display:inline-block;vertical-align:top;margin-bottom:8px;}
-.q-num{font-weight:700;font-size:10pt;margin-bottom:4px;}
-.q-pt{position:absolute;top:6px;right:8px;font-size:8pt;color:#888;font-weight:normal;}
-.ans-box{margin-top:5px;border:1px solid #ccc;border-radius:3px;height:26px;
-         display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;}
-.sig{margin-top:16px;text-align:right;font-size:10pt;}
-.ak-item{min-width:60px;font-size:11pt;font-weight:700;border:1px solid #ccc;
-         border-radius:4px;padding:4px 10px;text-align:center;}
+.note{font-size:9pt;font-style:italic;margin:3px 0 8px}
+.sig{margin-top:16px;text-align:right;font-size:10pt}
 @media print{body{background:#fff}.page{padding:10mm 14mm}}
 </style></head><body><div class="page">
 <div class="header">
-${school?`<div class="school">${school}</div>`:''}
-${title?`<div class="title">${title}</div>`:''}
-<div class="meta-row">
-  <span>${subject?`<b>Ders:</b> ${subject}`:''} ${topic?`&nbsp;|&nbsp; <b>Konu:</b> ${topic}`:''}</span>
-  ${testno?`<span class="badge">${testno}</span>`:''}
-</div>
-<div style="font-size:10pt;margin-top:2px;">${date}</div>
+  <div class="header-top">
+    <div class="school-block">
+      ${school?`<div class="school">${school}</div>`:''}
+      ${title?`<div class="title">${title}</div>`:''}
+      <div class="meta">
+        ${subject?`<b>Ders:</b> ${subject}`:''}
+        ${topic?` &nbsp;|&nbsp; <b>Konu:</b> ${topic}`:''}
+        ${date?` &nbsp;|&nbsp; ${date}`:''}
+      </div>
+    </div>
+    ${testno?`<div><span class="badge">${testno}</span></div>`:''}
+  </div>
 </div>
 <table class="info-t"><tr>
 <td class="lb">AD SOYAD</td><td></td>
@@ -588,7 +520,7 @@ ${title?`<div class="title">${title}</div>`:''}
 <div class="note">Not: Her soru ${pt} puandır. Toplam ${selectedQuestions.length} soru.</div>
 ${qHtmlAll}
 ${teacher?`<div class="sig">${teacher}</div>`:''}
-${ansPageHtml}
+${akHtml}
 </div></body></html>`;
 
   document.getElementById('preview-frame').srcdoc=html;
@@ -597,15 +529,11 @@ ${ansPageHtml}
 }
 
 function doPrint(){
-  // Mevcut iframe'i kullan - Safari'de en güvenilir yöntem
-  const ifr = document.getElementById('preview-frame');
-  ifr.onload = null;
-  ifr.srcdoc = window._printHtml;
-  ifr.onload = function(){
-    setTimeout(()=>{
-      ifr.contentWindow.focus();
-      ifr.contentWindow.print();
-    }, 400);
+  const ifr=document.getElementById('preview-frame');
+  ifr.onload=null;
+  ifr.srcdoc=window._printHtml;
+  ifr.onload=function(){
+    setTimeout(()=>{ifr.contentWindow.focus();ifr.contentWindow.print();},400);
   };
 }
 
