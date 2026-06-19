@@ -597,17 +597,16 @@ ${ansPageHtml}
 }
 
 function doPrint(){
-  const blob = new Blob([window._printHtml], {type:'text/html'});
-  const url  = URL.createObjectURL(blob);
-  const w    = window.open(url, '_blank');
-  if(w){
-    w.onload = () => { setTimeout(()=>{ w.print(); URL.revokeObjectURL(url); }, 500); };
-  } else {
-    // Fallback: iframe içinde yazdır
-    const ifr = document.getElementById('preview-frame');
-    ifr.contentWindow.focus();
-    ifr.contentWindow.print();
-  }
+  // Mevcut iframe'i kullan - Safari'de en güvenilir yöntem
+  const ifr = document.getElementById('preview-frame');
+  ifr.onload = null;
+  ifr.srcdoc = window._printHtml;
+  ifr.onload = function(){
+    setTimeout(()=>{
+      ifr.contentWindow.focus();
+      ifr.contentWindow.print();
+    }, 400);
+  };
 }
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
