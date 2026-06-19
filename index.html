@@ -337,10 +337,19 @@ async function renderPage(num){
   if(!pdfDoc) return;
   if(renderTask){try{renderTask.cancel();}catch(_){}renderTask=null;}
   const page=await pdfDoc.getPage(num);
-  const vp=page.getViewport({scale:currentScale});
+  const dpr = window.devicePixelRatio || 2;
+  const renderScale = currentScale * dpr;
+  const vp=page.getViewport({scale:renderScale});
+  // Canvas actual pixels = high-res
   pdfCanvas.width=vp.width; pdfCanvas.height=vp.height;
+  // Display size = logical pixels
+  const displayW = vp.width / dpr;
+  const displayH = vp.height / dpr;
+  pdfCanvas.style.width  = displayW + 'px';
+  pdfCanvas.style.height = displayH + 'px';
   selCanvas.width=vp.width; selCanvas.height=vp.height;
-  selCanvas.style.width=vp.width+'px'; selCanvas.style.height=vp.height+'px';
+  selCanvas.style.width  = displayW + 'px';
+  selCanvas.style.height = displayH + 'px';
   renderTask=page.render({canvasContext:ctx,viewport:vp});
   await renderTask.promise; renderTask=null;
   document.getElementById('page-info').textContent=num+'/'+totalPages;
@@ -354,23 +363,13 @@ function zoomIn(){currentScale=Math.min(currentScale*1.3,baseScale*5);renderPage
 function zoomOut(){currentScale=Math.max(currentScale/1.3,baseScale*0.5);renderPage(currentPage);}
 function zoomReset(){currentScale=baseScale;renderPage(currentPage);}
 
-// PINCH
-wrap.addEventListener('touchstart',e=>{
-  if(e.touches.length===2){
-    pinching=true;
-    pinchStartDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    pinchStartScale=currentScale; e.preventDefault();
+// Pinch bitti → render
+document.addEventListener('touchend', e=>{
+  if(pinching && (!e.touches || e.touches.length<2)){
+    pinching=false;
+    renderPage(currentPage);
   }
-},{passive:false});
-wrap.addEventListener('touchmove',e=>{
-  if(pinching&&e.touches.length===2){
-    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    currentScale=Math.min(Math.max(pinchStartScale*(d/pinchStartDist),baseScale*0.5),baseScale*5);
-    document.getElementById('zoom-info').textContent=Math.round(currentScale/baseScale*100)+'%';
-    e.preventDefault();
-  }
-},{passive:false});
-wrap.addEventListener('touchend',e=>{if(pinching&&e.touches.length<2){pinching=false;renderPage(currentPage);}});
+});
 
 // SELECT
 function toggleMode(){
@@ -383,9 +382,14 @@ function toggleMode(){
 }
 function getPos(e){
   const r=selCanvas.getBoundingClientRect();
-  const sx=selCanvas.width/r.width, sy=selCanvas.height/r.height;
   const src=e.touches?e.touches[0]:e;
-  return{cx:(src.clientX-r.left)*sx,cy:(src.clientY-r.top)*sy,rx:src.clientX-r.left,ry:src.clientY-r.top};
+  // logical pixels relative to displayed canvas
+  const rx=src.clientX-r.left;
+  const ry=src.clientY-r.top;
+  // scale to canvas coordinate space (logical)
+  const lw=parseFloat(selCanvas.style.width)||r.width;
+  const lh=parseFloat(selCanvas.style.height)||r.height;
+  return{cx:rx*(lw/r.width), cy:ry*(lh/r.height), rx, ry};
 }
 selCanvas.addEventListener('mousedown',onStart);
 selCanvas.addEventListener('touchstart',onStart,{passive:false});
@@ -395,32 +399,62 @@ document.addEventListener('mouseup',onEnd);
 document.addEventListener('touchend',onEnd);
 
 function onStart(e){
+  // 2 parmak = pinch zoom, seçimi iptal et
+  if(e.touches && e.touches.length>=2){
+    selecting=false; selBox.style.display='none';
+    // pinch başlat
+    pinching=true;
+    pinchStartDist=Math.hypot(
+      e.touches[0].clientX-e.touches[1].clientX,
+      e.touches[0].clientY-e.touches[1].clientY);
+    pinchStartScale=currentScale;
+    e.preventDefault(); return;
+  }
   if(!isSelectMode||pinching) return;
-  if(e.touches&&e.touches.length>1) return;
   e.preventDefault(); selecting=true;
   const p=getPos(e); startX=curX=p.cx; startY=curY=p.cy;
   selBox.style.cssText=`display:block;left:${p.rx}px;top:${p.ry}px;width:0;height:0;`;
 }
 function onMove(e){
+  // 2 parmak = pinch zoom
+  if(e.touches && e.touches.length>=2){
+    selecting=false; selBox.style.display='none';
+    if(!pinching){
+      pinching=true;
+      pinchStartDist=Math.hypot(
+        e.touches[0].clientX-e.touches[1].clientX,
+        e.touches[0].clientY-e.touches[1].clientY);
+      pinchStartScale=currentScale;
+    }
+    const d=Math.hypot(
+      e.touches[0].clientX-e.touches[1].clientX,
+      e.touches[0].clientY-e.touches[1].clientY);
+    currentScale=Math.min(Math.max(pinchStartScale*(d/pinchStartDist),baseScale*0.5),baseScale*5);
+    document.getElementById('zoom-info').textContent=Math.round(currentScale/baseScale*100)+'%';
+    e.preventDefault(); return;
+  }
   if(!selecting||pinching) return;
-  if(e.touches&&e.touches.length>1) return;
   e.preventDefault();
   const p=getPos(e); curX=p.cx; curY=p.cy;
   const r=selCanvas.getBoundingClientRect();
-  const sx=r.width/selCanvas.width, sy=r.height/selCanvas.height;
-  selBox.style.left=Math.min(startX,curX)*sx+'px';
-  selBox.style.top=Math.min(startY,curY)*sy+'px';
-  selBox.style.width=Math.abs(curX-startX)*sx+'px';
-  selBox.style.height=Math.abs(curY-startY)*sy+'px';
+  selBox.style.left=Math.min(startX,curX)+'px';
+  selBox.style.top=Math.min(startY,curY)+'px';
+  selBox.style.width=Math.abs(curX-startX)+'px';
+  selBox.style.height=Math.abs(curY-startY)+'px';
 }
 function onEnd(e){
   if(!selecting) return; selecting=false; selBox.style.display='none';
   const x=Math.min(startX,curX),y=Math.min(startY,curY);
   const w=Math.abs(curX-startX),h=Math.abs(curY-startY);
   if(w<15||h<15) return;
+  const dpr = window.devicePixelRatio || 2;
+  // startX/curX are in canvas logical pixels; canvas actual pixels = *dpr
   const tmp=document.createElement('canvas');
-  tmp.width=w; tmp.height=h;
-  tmp.getContext('2d').drawImage(pdfCanvas,x,y,w,h,0,0,w,h);
+  tmp.width=Math.round(w*dpr); tmp.height=Math.round(h*dpr);
+  tmp.getContext('2d').drawImage(pdfCanvas,
+    Math.round(x*dpr), Math.round(y*dpr),
+    Math.round(w*dpr), Math.round(h*dpr),
+    0, 0, Math.round(w*dpr), Math.round(h*dpr));
   selectedQuestions.push({dataUrl:tmp.toDataURL('image/png'),pageNum:currentPage,w,h});
   updateQList();
 }
