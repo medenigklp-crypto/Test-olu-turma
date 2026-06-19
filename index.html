@@ -246,6 +246,10 @@
     </div>
   </div>
   <div class="check-row">
+    <input type="checkbox" id="f-showpt"/>
+    <label for="f-showpt">Her soruda puan göster</label>
+  </div>
+  <div class="check-row">
     <input type="checkbox" id="f-anskey"/>
     <label for="f-anskey">Her soruya cevap kutusu ekle</label>
   </div>
@@ -337,7 +341,7 @@ async function renderPage(num){
   if(!pdfDoc) return;
   if(renderTask){try{renderTask.cancel();}catch(_){}renderTask=null;}
   const page=await pdfDoc.getPage(num);
-  const dpr = window.devicePixelRatio || 2;
+  const dpr = Math.max(window.devicePixelRatio || 2, 3);
   const renderScale = currentScale * dpr;
   const vp=page.getViewport({scale:renderScale});
   // Canvas actual pixels = high-res
@@ -481,7 +485,8 @@ function updateQList(){
 function generateTest(){
   const school   = document.getElementById('f-school').value;
   const cls      = document.getElementById('f-class').value;
-  const title    = document.getElementById('f-title').value || 'SINAV KAĞIDI';
+  const title    = document.getElementById('f-title').value;
+  const showPt   = document.getElementById('f-showpt').checked;
   const subject  = document.getElementById('f-subject').value;
   const topic    = document.getElementById('f-topic').value;
   const testno   = document.getElementById('f-testno').value;
@@ -520,7 +525,7 @@ function generateTest(){
       globalIdx++;
       qHtmlAll += `
         <div class="q-box" style="width:${colW};">
-          <div class="q-num">${globalIdx}. Soru <span class="q-pt">${pt} puan</span></div>
+          <div class="q-num">${globalIdx}. Soru</div>
           <img src="${q.dataUrl}" style="width:100%;border-radius:2px;display:block;" />
           ${ansKey?`<div class="ans-box">Cevap: ____</div>`:''}
         </div>`;
@@ -592,10 +597,17 @@ ${ansPageHtml}
 }
 
 function doPrint(){
-  const w=window.open('','_blank');
-  w.document.write(window._printHtml);
-  w.document.close(); w.focus();
-  setTimeout(()=>w.print(),600);
+  const blob = new Blob([window._printHtml], {type:'text/html'});
+  const url  = URL.createObjectURL(blob);
+  const w    = window.open(url, '_blank');
+  if(w){
+    w.onload = () => { setTimeout(()=>{ w.print(); URL.revokeObjectURL(url); }, 500); };
+  } else {
+    // Fallback: iframe içinde yazdır
+    const ifr = document.getElementById('preview-frame');
+    ifr.contentWindow.focus();
+    ifr.contentWindow.print();
+  }
 }
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
