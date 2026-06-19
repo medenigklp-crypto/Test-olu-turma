@@ -185,6 +185,7 @@
       </select>
     </div>
   </div>
+  <div class="check-row"><input type="checkbox" id="f-infotable" checked/><label for="f-infotable">Ad Soyad / Sınıf / Puan tablosu göster</label></div>
   <div class="check-row"><input type="checkbox" id="f-showpt"/><label for="f-showpt">Her soruda puan göster</label></div>
   <div class="check-row"><input type="checkbox" id="f-anskey"/><label for="f-anskey">Her soruya cevap kutusu ekle</label></div>
   <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Sona cevap anahtarı sayfası ekle</label></div>
@@ -442,6 +443,7 @@ function generateTest(){
   const showPt  =document.getElementById('f-showpt').checked;
   const ansKey  =document.getElementById('f-anskey').checked;
   const ansPage =document.getElementById('f-anspage').checked;
+  const infoTbl =document.getElementById('f-infotable').checked;
   const colW    =cols===2?'calc(50% - 5px)':'100%';
 
   // Grup: perpage
@@ -512,11 +514,11 @@ body{font-family:'Times New Roman',serif;font-size:11pt;color:#111}
     ${testno?`<div><span class="badge">${testno}</span></div>`:''}
   </div>
 </div>
-<table class="info-t"><tr>
-<td class="lb">AD SOYAD</td><td></td>
-<td class="lb">SINIF / NO</td><td>${cls}</td>
-<td class="lb">PUAN</td><td></td>
-</tr></table>
+${infoTbl?`<table class="info-t"><tr>
+<td class="lb">AD SOYAD</td><td style="width:35%"></td>
+<td class="lb">SINIF / NO</td><td style="width:15%">${cls}</td>
+<td class="lb">PUAN</td><td style="width:10%"></td>
+</tr></table>`:''}
 <div class="note">Not: Her soru ${pt} puandır. Toplam ${selectedQuestions.length} soru.</div>
 ${qHtmlAll}
 ${teacher?`<div class="sig">${teacher}</div>`:''}
@@ -529,17 +531,16 @@ ${akHtml}
 }
 
 function doPrint(){
-  // iOS Safari için en güvenilir yöntem: yeni sekme aç
-  const blob = new Blob([window._printHtml], {type:'text/html;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.target   = '_blank';
-  a.rel      = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url), 10000);
+  // Base64 data URI — Safari bu yöntemi PDF olarak kaydedebilir
+  const encoded = btoa(unescape(encodeURIComponent(window._printHtml)));
+  const dataUri = 'data:text/html;charset=utf-8;base64,' + encoded;
+  const w = window.open(dataUri, '_blank');
+  if(!w){
+    // Pop-up engellendiyse iframe içinden dene
+    const ifr = document.getElementById('preview-frame');
+    ifr.contentWindow.focus();
+    ifr.contentWindow.print();
+  }
 }
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
