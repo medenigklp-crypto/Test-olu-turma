@@ -12,119 +12,140 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#f0f4f8;min-height:100vh;}
-    /* HEADER */
-    #header{background:#1a7fa8;color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200;}
-    #header h1{font-size:16px;font-weight:700;flex:1;}
-    #header p{font-size:11px;opacity:.8;}
-    .hbtn{background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:20px;padding:7px 14px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;}
-    .hbtn.active{background:#fff;color:#1a7fa8;}
-    /* NAV TABS */
+    #header{background:#1a7fa8;color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));display:flex;align-items:center;gap:8px;position:sticky;top:0;z-index:200;}
+    #header h1{font-size:15px;font-weight:700;flex:1;}
+    #header p{font-size:10px;opacity:.8;}
+    .hbtn{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:16px;padding:6px 12px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;}
     #nav-tabs{display:flex;background:#fff;border-bottom:2px solid #e0e0e0;}
-    .nav-tab{flex:1;padding:12px;text-align:center;font-size:13px;font-weight:700;color:#888;cursor:pointer;border-bottom:3px solid transparent;transition:.2s;}
+    .nav-tab{flex:1;padding:11px;text-align:center;font-size:13px;font-weight:700;color:#888;cursor:pointer;border-bottom:3px solid transparent;}
     .nav-tab.active{color:#1a7fa8;border-bottom-color:#1a7fa8;}
-    /* SCREENS */
     .screen{display:none;}.screen.active{display:block;}
     /* UPLOAD */
-    #upload-screen{padding:20px 16px;}
-    .upload-card{border:2px dashed #1a7fa8;border-radius:16px;padding:32px 20px;text-align:center;background:#fff;cursor:pointer;margin-bottom:12px;}
-    .upload-card .icon{font-size:38px;}
-    .upload-card h2{font-size:16px;font-weight:700;color:#1a7fa8;margin:8px 0 3px;}
+    #upload-screen{padding:16px;}
+    .upload-card{border:2px dashed #1a7fa8;border-radius:14px;padding:28px 16px;text-align:center;background:#fff;cursor:pointer;margin-bottom:10px;}
+    .upload-card .icon{font-size:36px;}
+    .upload-card h2{font-size:15px;font-weight:700;color:#1a7fa8;margin:6px 0 2px;}
     .upload-card p{color:#888;font-size:12px;}
     .upload-card.photo{border-color:#aaa;}.upload-card.photo h2{color:#555;}
-    #loading-bar{display:none;margin-top:16px;background:#fff;border-radius:12px;padding:20px;text-align:center;}
+    #loading-bar{display:none;margin-top:14px;background:#fff;border-radius:12px;padding:20px;text-align:center;}
     #loading-bar p{color:#1a7fa8;font-weight:600;margin-top:8px;}
-    .spinner{width:36px;height:36px;border:4px solid #e0e0e0;border-top-color:#1a7fa8;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
+    .spinner{width:32px;height:32px;border:4px solid #e0e0e0;border-top-color:#1a7fa8;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
     @keyframes spin{to{transform:rotate(360deg);}}
     /* VIEWER */
-    #viewer-screen{display:none;flex-direction:column;height:calc(100vh - 110px);}
+    #viewer-screen{display:none;flex-direction:column;height:calc(100vh - 100px);}
     #viewer-screen.active{display:flex;}
     #viewer-toolbar{background:#fff;border-bottom:2px solid #e0e0e0;display:flex;flex-direction:column;flex-shrink:0;}
-    .tb-row{display:flex;align-items:center;gap:5px;padding:7px 8px;}
+    .tb-row{display:flex;align-items:center;gap:4px;padding:6px 8px;}
     .tb-row+.tb-row{border-top:1px solid #f0f0f0;}
-    #viewer-toolbar button{background:#e8f4f8;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;font-weight:700;color:#1a7fa8;white-space:nowrap;flex-shrink:0;}
+    #viewer-toolbar button{background:#e8f4f8;border:none;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:13px;font-weight:700;color:#1a7fa8;white-space:nowrap;flex-shrink:0;}
     #viewer-toolbar button.primary{background:#1a7fa8;color:#fff;}
     #viewer-toolbar button.warn{background:#f0a500;color:#fff;}
+    #viewer-toolbar button.danger{background:#e74c3c;color:#fff;}
+    #viewer-toolbar button.success{background:#27ae60;color:#fff;}
     #viewer-toolbar button:disabled{opacity:.4;cursor:default;}
-    #page-info{font-size:13px;color:#333;flex:1;text-align:center;font-weight:700;}
-    #zoom-info{font-size:13px;color:#333;font-weight:700;min-width:46px;text-align:center;background:#f5f5f5;border-radius:6px;padding:4px 6px;}
-    #canvas-wrap{flex:1;overflow:auto;background:#555;display:flex;justify-content:center;align-items:flex-start;padding:10px;-webkit-overflow-scrolling:touch;}
+    #page-info{font-size:12px;color:#333;flex:1;text-align:center;font-weight:700;}
+    #zoom-info{font-size:12px;color:#333;font-weight:700;min-width:40px;text-align:center;background:#f5f5f5;border-radius:6px;padding:3px 5px;}
+    #canvas-wrap{flex:1;overflow:auto;background:#555;display:flex;justify-content:center;align-items:flex-start;padding:8px;-webkit-overflow-scrolling:touch;}
     #canvas-container{position:relative;display:inline-block;align-self:flex-start;}
     #pdf-canvas{display:block;}
     #select-canvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none;}
     #sel-box{position:absolute;border:2.5px solid #e74c3c;background:rgba(231,76,60,.12);pointer-events:none;display:none;border-radius:2px;}
-    #questions-bar{background:#fff;border-top:2px solid #1a7fa8;padding:8px 12px;max-height:140px;overflow-y:auto;flex-shrink:0;}
-    #questions-bar h3{font-size:11px;font-weight:700;color:#1a7fa8;margin-bottom:5px;}
-    #q-list{display:flex;flex-wrap:wrap;gap:6px;min-height:16px;}
+    /* PHOTO CROP */
+    #photo-crop-screen{display:none;flex-direction:column;height:calc(100vh - 100px);}
+    #photo-crop-screen.active{display:flex;}
+    #crop-toolbar{background:#fff;border-bottom:2px solid #e0e0e0;padding:8px;display:flex;gap:8px;flex-shrink:0;}
+    #crop-toolbar button{flex:1;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;}
+    #btn-crop-ok{background:#27ae60;color:#fff;}
+    #btn-crop-cancel{background:#f0f0f0;color:#333;}
+    #crop-info{font-size:12px;color:#666;text-align:center;padding:4px;}
+    #crop-wrap{flex:1;overflow:auto;background:#333;display:flex;justify-content:center;align-items:flex-start;padding:8px;}
+    #crop-container{position:relative;display:inline-block;align-self:flex-start;}
+    #crop-img{display:block;max-width:100%;}
+    #crop-sel-box{position:absolute;border:2.5px solid #e74c3c;background:rgba(231,76,60,.15);pointer-events:none;display:none;}
+    #crop-canvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none;cursor:crosshair;}
+    /* Q BAR */
+    #questions-bar{background:#fff;border-top:2px solid #1a7fa8;padding:7px 10px;max-height:130px;overflow-y:auto;flex-shrink:0;}
+    #questions-bar h3{font-size:11px;font-weight:700;color:#1a7fa8;margin-bottom:4px;}
+    #q-list{display:flex;flex-wrap:wrap;gap:5px;min-height:14px;}
     .q-thumb{position:relative;border:2px solid #1a7fa8;border-radius:6px;overflow:hidden;}
-    .q-thumb img{display:block;height:60px;width:auto;max-width:130px;object-fit:contain;background:#fff;}
-    .q-thumb .del{position:absolute;top:2px;right:2px;background:rgba(200,0,0,.85);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    #q-empty{color:#bbb;font-size:12px;font-style:italic;}
-    #fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));right:16px;z-index:300;background:#f0a500;color:#fff;border:none;border-radius:28px;padding:13px 18px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:none;}
+    .q-thumb img{display:block;height:55px;width:auto;max-width:120px;object-fit:contain;background:#fff;}
+    .q-thumb .del{position:absolute;top:1px;right:1px;background:rgba(200,0,0,.85);color:#fff;border:none;border-radius:50%;width:17px;height:17px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    #q-empty{color:#bbb;font-size:11px;font-style:italic;}
+    /* FAB */
+    #fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom));right:16px;z-index:300;background:#f0a500;color:#fff;border:none;border-radius:28px;padding:12px 16px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:none;}
     /* SETTINGS */
-    #settings-screen{padding:16px;overflow-y:auto;max-height:calc(100vh - 110px);}
-    #settings-screen h2{font-size:17px;font-weight:700;color:#1a7fa8;margin-bottom:14px;}
-    .field{margin-bottom:11px;}
-    .field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:3px;}
-    .field input,.field select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;background:#fff;}
-    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-    .check-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-    .check-row input{width:18px;height:18px;}
-    .sec-title{font-size:11px;font-weight:700;color:#1a7fa8;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;border-bottom:1px solid #e0f0f8;padding-bottom:4px;}
-    .btn-primary{width:100%;background:#1a7fa8;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;}
-    .btn-secondary{width:100%;background:#f0f0f0;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px;}
+    #settings-screen{padding:14px;overflow-y:auto;max-height:calc(100vh - 100px);}
+    #settings-screen h2{font-size:16px;font-weight:700;color:#1a7fa8;margin-bottom:12px;}
+    .field{margin-bottom:10px;}
+    .field label{display:block;font-size:11px;font-weight:600;color:#555;margin-bottom:2px;}
+    .field input,.field select{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:8px;font-size:13px;outline:none;background:#fff;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .check-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+    .check-row input{width:17px;height:17px;}
+    .sec-title{font-size:10px;font-weight:700;color:#1a7fa8;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px;border-bottom:1px solid #e0f0f8;padding-bottom:3px;}
+    .btn-primary{width:100%;background:#1a7fa8;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;margin-top:5px;}
+    .btn-secondary{width:100%;background:#f0f0f0;border:none;border-radius:12px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;}
+    .btn-row{display:flex;gap:8px;margin-top:5px;}
+    .btn-row button{flex:1;border:none;border-radius:12px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;}
     /* PREVIEW */
-    #preview-screen{padding:14px;}
-    #preview-screen h2{font-size:17px;font-weight:700;color:#1a7fa8;margin-bottom:10px;}
-    #preview-actions{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
-    #preview-actions button{flex:1;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;min-width:80px;}
+    #preview-screen{padding:12px;}
+    #preview-screen h2{font-size:16px;font-weight:700;color:#1a7fa8;margin-bottom:8px;}
+    #preview-actions{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+    #preview-actions button{flex:1;border:none;border-radius:10px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;min-width:70px;}
     #btn-print{background:#1a7fa8;color:#fff;}
     #btn-save-lib{background:#27ae60;color:#fff;}
+    #btn-share-btn{background:#9b59b6;color:#fff;}
+    #btn-shuffle{background:#e67e22;color:#fff;}
     #btn-back-preview{background:#f0f0f0;color:#333;}
     #btn-new{background:#e8f7ff;color:#1a7fa8;}
     #preview-frame{width:100%;height:65vh;border:none;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.15);}
     /* LIBRARY */
-    #library-screen{padding:16px;overflow-y:auto;max-height:calc(100vh - 110px);}
-    #library-screen h2{font-size:17px;font-weight:700;color:#1a7fa8;margin-bottom:14px;}
-    .lib-search{width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:10px;font-size:14px;outline:none;background:#fff;margin-bottom:12px;}
-    .subject-block{margin-bottom:16px;}
-    .subject-header{background:#1a7fa8;color:#fff;padding:10px 14px;border-radius:10px 10px 0 0;font-weight:700;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+    #library-screen{padding:14px;overflow-y:auto;max-height:calc(100vh - 100px);}
+    #library-screen h2{font-size:16px;font-weight:700;color:#1a7fa8;margin-bottom:12px;}
+    .lib-search{width:100%;padding:9px 13px;border:1px solid #ddd;border-radius:10px;font-size:13px;outline:none;background:#fff;margin-bottom:10px;}
+    .subject-block{margin-bottom:14px;}
+    .subject-header{background:#1a7fa8;color:#fff;padding:9px 13px;border-radius:10px 10px 0 0;font-weight:700;font-size:13px;cursor:pointer;display:flex;justify-content:space-between;}
     .subject-body{border:1px solid #ddd;border-top:none;border-radius:0 0 10px 10px;overflow:hidden;}
-    .topic-block{border-bottom:1px solid #f0f0f0;}
-    .topic-block:last-child{border-bottom:none;}
-    .topic-header{background:#e8f4f8;padding:8px 14px;font-weight:700;font-size:13px;color:#1a7fa8;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
-    .topic-tests{padding:4px 0;}
-    .test-item{display:flex;align-items:center;padding:8px 14px;gap:10px;border-bottom:1px solid #f8f8f8;}
+    .topic-header{background:#e8f4f8;padding:7px 13px;font-weight:700;font-size:12px;color:#1a7fa8;cursor:pointer;display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0;}
+    .test-item{display:flex;align-items:center;padding:7px 13px;gap:8px;border-bottom:1px solid #f8f8f8;}
     .test-item:last-child{border-bottom:none;}
     .test-item-info{flex:1;}
-    .test-item-title{font-weight:600;font-size:13px;color:#333;}
-    .test-item-meta{font-size:11px;color:#999;margin-top:2px;}
-    .test-item-btns{display:flex;gap:6px;}
-    .test-item-btns button{border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;}
+    .test-item-title{font-weight:600;font-size:12px;color:#333;}
+    .test-item-meta{font-size:10px;color:#999;margin-top:1px;}
+    .test-item-btns{display:flex;gap:5px;}
+    .test-item-btns button{border:none;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:600;cursor:pointer;}
     .btn-open{background:#e8f4f8;color:#1a7fa8;}
+    .btn-export{background:#e8f5e9;color:#27ae60;}
     .btn-del{background:#fee;color:#c00;}
-    #lib-empty{text-align:center;padding:40px;color:#bbb;font-size:14px;}
+    #lib-empty{text-align:center;padding:30px;color:#bbb;font-size:13px;}
     /* SAVE MODAL */
     #save-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;}
     #save-modal.open{display:flex;}
-    #save-modal-inner{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:20px 16px;padding-bottom:calc(20px + env(safe-area-inset-bottom));}
-    #save-modal-inner h3{font-size:16px;font-weight:700;color:#1a7fa8;margin-bottom:14px;}
-    #save-modal-inner input,#save-modal-inner select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;background:#fff;margin-bottom:10px;}
-    #save-modal-inner .modal-btns{display:flex;gap:10px;margin-top:6px;}
-    #save-modal-inner .modal-btns button{flex:1;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
+    #save-modal-inner{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:18px 16px;padding-bottom:calc(18px + env(safe-area-inset-bottom));}
+    #save-modal-inner h3{font-size:15px;font-weight:700;color:#1a7fa8;margin-bottom:12px;}
+    #save-modal-inner input{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:8px;font-size:13px;outline:none;background:#fff;margin-bottom:8px;}
+    .modal-btns{display:flex;gap:8px;margin-top:4px;}
+    .modal-btns button{flex:1;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;}
     #btn-modal-save{background:#27ae60;color:#fff;}
     #btn-modal-cancel{background:#f0f0f0;color:#333;}
+    /* ANS KEY MODAL */
+    #anskey-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;}
+    #anskey-modal.open{display:flex;}
+    #anskey-modal-inner{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:18px 16px;max-height:80vh;overflow-y:auto;padding-bottom:calc(18px + env(safe-area-inset-bottom));}
+    #anskey-modal-inner h3{font-size:15px;font-weight:700;color:#1a7fa8;margin-bottom:12px;}
+    .ans-item{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+    .ans-item span{font-weight:700;font-size:13px;min-width:60px;}
+    .ans-opts{display:flex;gap:6px;}
+    .ans-opt{border:1px solid #ddd;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;color:#555;}
+    .ans-opt.selected{background:#1a7fa8;color:#fff;border-color:#1a7fa8;}
   </style>
 </head>
 <body>
 <div id="header">
-  <div style="flex:1">
-    <h1>📄 Test Oluşturucu</h1>
-    <p id="header-sub">PDF veya foto seç → A4 test oluştur</p>
-  </div>
-  <button class="hbtn" onclick="switchTab('upload')">+ Yükle</button>
-  <button class="hbtn" id="lib-btn" onclick="switchTab('library');loadLibrary()">📚</button>
+  <div style="flex:1"><h1>📄 Test Oluşturucu</h1><p id="header-sub">PDF veya foto seç → A4 test oluştur</p></div>
+  <button class="hbtn" onclick="showUpload()">+ Yükle</button>
+  <button class="hbtn" onclick="switchTab('library');loadLibrary()">📚</button>
 </div>
-
 <div id="nav-tabs">
   <div class="nav-tab active" id="tab-upload" onclick="switchTab('upload')">🏠 Ana Sayfa</div>
   <div class="nav-tab" id="tab-library" onclick="switchTab('library');loadLibrary()">📚 Kütüphane</div>
@@ -132,23 +153,16 @@
 
 <!-- UPLOAD -->
 <div id="upload-screen" class="screen active">
-  <div style="padding:20px 16px;">
+  <div style="padding:16px;">
     <div class="upload-card" onclick="document.getElementById('file-input').click()">
-      <div class="icon">📎</div>
-      <h2>PDF Yükle</h2>
-      <p>Tıkla — PDF dosyası seçin</p>
+      <div class="icon">📎</div><h2>PDF Yükle</h2><p>Tıkla — PDF dosyası seçin</p>
     </div>
     <input id="file-input" type="file" accept="application/pdf" style="display:none" onchange="loadPDF(this)"/>
     <div class="upload-card photo" onclick="document.getElementById('photo-input').click()">
-      <div class="icon">🖼️</div>
-      <h2>Galeriden Fotoğraf Ekle</h2>
-      <p>PNG, JPG — birden fazla seçebilirsiniz</p>
+      <div class="icon">🖼️</div><h2>Galeriden Fotoğraf Ekle</h2><p>PNG, JPG — seçip kırpabilirsiniz</p>
     </div>
     <input id="photo-input" type="file" accept="image/*" multiple style="display:none" onchange="loadPhotos(this)"/>
-    <div id="loading-bar">
-      <div class="spinner"></div>
-      <p id="loading-text">PDF yükleniyor...</p>
-    </div>
+    <div id="loading-bar"><div class="spinner"></div><p id="loading-text">PDF yükleniyor...</p></div>
   </div>
 </div>
 
@@ -156,16 +170,19 @@
 <div id="viewer-screen" class="screen">
   <div id="viewer-toolbar">
     <div class="tb-row">
-      <button id="btn-prev" onclick="changePage(-1)" disabled>◀ Önceki</button>
+      <button id="btn-prev" onclick="changePage(-1)" disabled>◀</button>
       <span id="page-info">— / —</span>
-      <button id="btn-next" onclick="changePage(1)" disabled>Sonraki ▶</button>
+      <button id="btn-next" onclick="changePage(1)" disabled>▶</button>
+      <button onclick="document.getElementById('file-input').click()" style="background:#e8f0fe;color:#1a7fa8;">📎 PDF Değiştir</button>
+      <button id="btn-undo" onclick="undoLast()" disabled style="background:#fee;color:#c00;">↩️ Geri Al</button>
     </div>
     <div class="tb-row">
-      <button onclick="zoomOut()" style="font-size:18px;padding:8px 16px;">−</button>
+      <button onclick="zoomOut()" style="font-size:16px;padding:7px 14px;">−</button>
       <span id="zoom-info">100%</span>
-      <button onclick="zoomIn()" style="font-size:18px;padding:8px 16px;">+</button>
+      <button onclick="zoomIn()" style="font-size:16px;padding:7px 14px;">+</button>
       <button onclick="zoomReset()">↺</button>
       <button id="btn-mode" class="primary" onclick="toggleMode()">✂️ Seç</button>
+      <button id="btn-shuffle-q" onclick="shuffleQuestions()" title="Soruları Karıştır">🔀</button>
       <button id="btn-go" class="warn" onclick="goSettings()" disabled>⚙️(<span id="q-count">0</span>)</button>
     </div>
   </div>
@@ -177,8 +194,24 @@
     </div>
   </div>
   <div id="questions-bar">
-    <h3>Seçilen: <span id="q-count2">0</span> soru &nbsp;|&nbsp; ✂️ modda kare çizin</h3>
+    <h3>Seçilen: <span id="q-count2">0</span> soru &nbsp;|&nbsp; ✂️ modda kare çiz · 🖐 kaydır</h3>
     <div id="q-list"><span id="q-empty">Henüz soru seçilmedi</span></div>
+  </div>
+</div>
+
+<!-- PHOTO CROP -->
+<div id="photo-crop-screen" class="screen">
+  <div id="crop-toolbar">
+    <button id="btn-crop-cancel" onclick="cancelCrop()">✕ İptal</button>
+    <button id="btn-crop-ok" onclick="confirmCrop()">✓ Seç</button>
+  </div>
+  <div id="crop-info">Parmakla kare çizerek soruyu seçin</div>
+  <div id="crop-wrap">
+    <div id="crop-container">
+      <img id="crop-img" src=""/>
+      <div id="crop-sel-box"></div>
+      <canvas id="crop-canvas"></canvas>
+    </div>
   </div>
 </div>
 
@@ -189,7 +222,7 @@
   <div class="sec-title">📋 Okul Bilgileri</div>
   <div class="field-row">
     <div class="field"><label>Okul Adı</label><input id="f-school" placeholder="Okul adı"/></div>
-    <div class="field"><label>Sınıf / Şube</label><input id="f-class" placeholder="9-A"/></div>
+    <div class="field"><label>Sınıf</label><input id="f-class" placeholder="9-A"/></div>
   </div>
   <div class="field-row">
     <div class="field"><label>Öğretmen</label><input id="f-teacher" placeholder="Ad Soyad"/></div>
@@ -202,12 +235,15 @@
     <div class="field"><label>Konu Adı</label><input id="f-topic" placeholder="Asit Baz"/></div>
   </div>
   <div class="field-row">
-    <div class="field"><label>Test No</label>
+    <div class="field"><label>Test No / Şablon</label>
       <select id="f-testno">
         <option value="">— Yok —</option>
         <option value="TEST 1">TEST 1</option><option value="TEST 2">TEST 2</option>
         <option value="TEST 3">TEST 3</option><option value="TEST 4">TEST 4</option>
         <option value="TEST 5">TEST 5</option>
+        <option value="YAZILI SINAV">YAZILI SINAV</option>
+        <option value="QUIZ">QUIZ</option>
+        <option value="ÖDEV">ÖDEV</option>
         <option value="A KİTAPÇIĞI">A KİTAPÇIĞI</option>
         <option value="B KİTAPÇIĞI">B KİTAPÇIĞI</option>
       </select>
@@ -216,35 +252,39 @@
   </div>
   <div class="sec-title">📐 Düzen</div>
   <div class="field-row">
-    <div class="field"><label>Sütun Sayısı</label>
+    <div class="field"><label>Sütun</label>
       <select id="f-cols"><option value="1">1 Sütun</option><option value="2" selected>2 Sütun</option></select>
     </div>
-    <div class="field"><label>Sayfa Başı Max Soru</label>
+    <div class="field"><label>Sayfa Başı Max</label>
       <select id="f-perpage">
         <option value="auto" selected>Otomatik</option>
-        <option value="2">2 soru</option><option value="3">3 soru</option>
-        <option value="4">4 soru</option><option value="5">5 soru</option>
-        <option value="6">6 soru</option>
+        <option value="2">2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option><option value="6">6</option>
       </select>
     </div>
   </div>
   <div class="check-row"><input type="checkbox" id="f-infotable" checked/><label for="f-infotable">Ad Soyad / Sınıf / Puan tablosu</label></div>
   <div class="check-row"><input type="checkbox" id="f-shownote"/><label for="f-shownote">Not satırı (Her soru X puan...)</label></div>
   <div class="check-row"><input type="checkbox" id="f-showpt"/><label for="f-showpt">Her soruda puan göster</label></div>
-  <div class="check-row"><input type="checkbox" id="f-anskey"/><label for="f-anskey">Her soruya cevap kutusu ekle</label></div>
-  <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Sona cevap anahtarı sayfası ekle</label></div>
-  <button class="btn-primary" onclick="generateTest()">📄 Testi Oluştur</button>
+  <div class="check-row"><input type="checkbox" id="f-anskey"/><label for="f-anskey">Her soruya cevap kutusu</label></div>
+  <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Cevap anahtarı sayfası</label></div>
+  <div class="check-row"><input type="checkbox" id="f-qrcode"/><label for="f-qrcode">QR Kod ekle (paylaşım için)</label></div>
+  <div class="btn-row">
+    <button style="background:#8e44ad;color:#fff;" onclick="openAnkeyModal()">📝 Cevap Anahtarı Doldur</button>
+    <button style="background:#1a7fa8;color:#fff;" onclick="generateTest()">📄 Testi Oluştur</button>
+  </div>
 </div>
 
 <!-- PREVIEW -->
 <div id="preview-screen" class="screen">
-  <div style="padding:14px;">
+  <div style="padding:12px;">
     <h2>Önizleme</h2>
     <div id="preview-actions">
       <button id="btn-back-preview" onclick="showSettings()">← Geri</button>
-      <button onclick="doPrint()" style="background:#1a7fa8;color:#fff;flex:2;">🖨️ Yazdır / PDF</button>
-      <button id="btn-share" onclick="sharePDF()" style="background:#9b59b6;color:#fff;">📤 Paylaş</button>
+      <button id="btn-print" onclick="doPrint()">🖨️ Yazdır/PDF</button>
+      <button id="btn-share-btn" onclick="sharePDF()">📤 Paylaş</button>
       <button id="btn-save-lib" onclick="openSaveModal()">💾 Kaydet</button>
+      <button id="btn-shuffle" onclick="shuffleAndRegen()">🔀 Karıştır</button>
       <button id="btn-new" onclick="startNew()">🔄 Yeni</button>
     </div>
     <iframe id="preview-frame"></iframe>
@@ -255,14 +295,14 @@
 <div id="library-screen" class="screen">
   <h2>📚 Test Kütüphanesi</h2>
   <input class="lib-search" id="lib-search" placeholder="🔍 Ara..." oninput="loadLibrary()"/>
-  <button onclick="clearStorage()" style="width:100%;background:#fee;border:1px solid #fcc;border-radius:8px;padding:10px;color:#c00;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;">🗑️ Depolamayı Temizle (Sorun varsa)</button>
-  <div id="lib-content"><div id="lib-empty">Henüz kayıtlı test yok.<br/>Test oluşturup 💾 Kaydet butonuyla ekleyin.</div></div>
+  <button onclick="clearStorage()" style="width:100%;background:#fee;border:1px solid #fcc;border-radius:8px;padding:8px;color:#c00;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:10px;">🗑️ Depolamayı Temizle</button>
+  <div id="lib-content"><div id="lib-empty">Henüz kayıtlı test yok.</div></div>
 </div>
 
 <!-- SAVE MODAL -->
 <div id="save-modal">
   <div id="save-modal-inner">
-    <h3>💾 Testi Kütüphaneye Kaydet</h3>
+    <h3>💾 Kütüphaneye Kaydet</h3>
     <input id="sm-subject" placeholder="Ders (örn: Kimya)"/>
     <input id="sm-topic" placeholder="Konu (örn: Asit-Baz)"/>
     <input id="sm-title" placeholder="Test adı (örn: TEST 1)"/>
@@ -273,14 +313,31 @@
   </div>
 </div>
 
-<button id="fab" onclick="goSettings()">⚙️ Test Oluştur (<span id="fab-count">0</span>)</button>
+<!-- ANS KEY MODAL -->
+<div id="anskey-modal">
+  <div id="anskey-modal-inner">
+    <h3>📝 Cevap Anahtarı</h3>
+    <div id="anskey-list"></div>
+    <div class="modal-btns" style="margin-top:12px;">
+      <button style="background:#f0f0f0;color:#333;flex:1;border:none;border-radius:10px;padding:11px;font-weight:700;cursor:pointer;" onclick="closeAnkeyModal()">Tamam</button>
+    </div>
+  </div>
+</div>
+
+<button id="fab" onclick="goSettings()">⚙️ (<span id="fab-count">0</span>)</button>
 
 <script>
-// PDF.js
 (function(){
   const s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
   s.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';};
+  document.head.appendChild(s);
+})();
+
+// QR kütüphanesi
+(function(){
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
   document.head.appendChild(s);
 })();
 
@@ -291,13 +348,18 @@ let startX=0,startY=0,curX=0,curY=0;
 let selectedQuestions=[],renderTask=null;
 let pinching=false,pinchStartDist=0,pinchStartScale=1;
 let currentHtml='';
+let answerKey={}; // {0:'A', 1:'B', ...}
+
+// Fotoğraf kırpma
+let cropImg=null,cropSelX=0,cropSelY=0,cropSelW=0,cropSelH=0,cropSelecting=false;
+let cropPendingFiles=[];
 
 const pdfCanvas=document.getElementById('pdf-canvas');
 const selCanvas=document.getElementById('select-canvas');
 const selBox=document.getElementById('sel-box');
 const ctx=pdfCanvas.getContext('2d');
 
-// TAB SWITCH
+// TABS
 function switchTab(tab){
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('tab-'+tab).classList.add('active');
@@ -309,75 +371,144 @@ function switchTab(tab){
   }
 }
 
-// SCREENS
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');s.style.display='';});
   const el=document.getElementById(id);
   el.classList.add('active');
   if(id==='viewer-screen') el.style.display='flex';
-  document.getElementById('fab').style.display=(id==='viewer-screen'&&selectedQuestions.length>0)?'flex':'none';
+  if(id==='photo-crop-screen') el.style.display='flex';
+  const isV=id==='viewer-screen';
+  document.getElementById('fab').style.display=(isV&&selectedQuestions.length>0)?'flex':'none';
 }
 function showUpload(){document.getElementById('tab-upload').classList.add('active');document.getElementById('tab-library').classList.remove('active');showScreen('upload-screen');}
 function showViewer(){showScreen('viewer-screen');}
 function showSettings(){showScreen('settings-screen');}
 function showPreview(){showScreen('preview-screen');}
 function goSettings(){
-  if(!selectedQuestions.length) return;
+  if(!selectedQuestions.length)return;
   document.getElementById('f-date').value=new Date().toLocaleDateString('tr-TR');
-  // Ayarları önceki girdilerden doldur
+  if(document.getElementById('f-subject').value) document.getElementById('sm-subject').value=document.getElementById('f-subject').value;
+  if(document.getElementById('f-topic').value) document.getElementById('sm-topic').value=document.getElementById('f-topic').value;
   showSettings();
 }
-function startNew(){selectedQuestions=[];pdfDoc=null;updateQList();showScreen('upload-screen');}
+function startNew(){selectedQuestions=[];answerKey={};pdfDoc=null;updateQList();showScreen('upload-screen');}
 
-// LOAD PDF
+// PDF LOAD
 async function loadPDF(input){
-  const file=input.files[0]; if(!file) return;
+  const file=input.files[0];if(!file)return;
   document.getElementById('loading-bar').style.display='block';
   document.getElementById('loading-text').textContent='PDF okunuyor...';
   try{
     const ab=await file.arrayBuffer();
     if(typeof pdfjsLib==='undefined') await new Promise(r=>setTimeout(r,1500));
     pdfDoc=await pdfjsLib.getDocument({data:ab}).promise;
-    totalPages=pdfDoc.numPages; currentPage=1;
+    totalPages=pdfDoc.numPages;currentPage=1;
     const page=await pdfDoc.getPage(1);
     const vp0=page.getViewport({scale:1});
-    baseScale=(window.innerWidth-20)/vp0.width;
+    baseScale=(window.innerWidth-16)/vp0.width;
     currentScale=baseScale;
     document.getElementById('loading-bar').style.display='none';
     showViewer();
     await renderPage(currentPage);
   }catch(e){document.getElementById('loading-text').textContent='Hata: '+e.message;}
+  input.value='';
 }
 
-// LOAD PHOTOS
+// PHOTO LOAD — kırpma ekranı
 function loadPhotos(input){
-  const files=Array.from(input.files); if(!files.length) return;
-  let loaded=0;
-  files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=e=>{
-      selectedQuestions.push({dataUrl:e.target.result,pageNum:'foto',w:0,h:0});
-      loaded++;
-      if(loaded===files.length){updateQList();if(!pdfDoc){document.getElementById('f-date').value=new Date().toLocaleDateString('tr-TR');showSettings();}else showViewer();}
-    };
-    reader.readAsDataURL(file);
-  });
+  cropPendingFiles=Array.from(input.files);
+  if(!cropPendingFiles.length)return;
+  input.value='';
+  showNextCrop();
 }
+
+function showNextCrop(){
+  if(!cropPendingFiles.length){
+    updateQList();
+    if(!pdfDoc) goSettings();
+    else showViewer();
+    return;
+  }
+  const file=cropPendingFiles.shift();
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById('crop-img');
+    img.onload=()=>{
+      // Canvas boyutunu ayarla
+      const cc=document.getElementById('crop-canvas');
+      cc.style.width=img.offsetWidth+'px';
+      cc.style.height=img.offsetHeight+'px';
+      cc.width=img.naturalWidth;
+      cc.height=img.naturalHeight;
+    };
+    img.src=e.target.result;
+    cropSelX=cropSelY=cropSelW=cropSelH=0;
+    document.getElementById('crop-sel-box').style.display='none';
+    showScreen('photo-crop-screen');
+  };
+  reader.readAsDataURL(file);
+}
+
+function confirmCrop(){
+  if(cropSelW<10||cropSelH<10){
+    // Tamamını ekle
+    const img=document.getElementById('crop-img');
+    selectedQuestions.push({dataUrl:img.src,pageNum:'foto',w:img.naturalWidth,h:img.naturalHeight});
+  } else {
+    const img=document.getElementById('crop-img');
+    const scaleX=img.naturalWidth/img.offsetWidth;
+    const scaleY=img.naturalHeight/img.offsetHeight;
+    const tmp=document.createElement('canvas');
+    tmp.width=Math.round(cropSelW*scaleX);
+    tmp.height=Math.round(cropSelH*scaleY);
+    tmp.getContext('2d').drawImage(img,Math.round(cropSelX*scaleX),Math.round(cropSelY*scaleY),tmp.width,tmp.height,0,0,tmp.width,tmp.height);
+    selectedQuestions.push({dataUrl:tmp.toDataURL('image/jpeg',0.85),pageNum:'foto',w:tmp.width,h:tmp.height});
+  }
+  showNextCrop();
+}
+function cancelCrop(){
+  cropPendingFiles=[];
+  if(pdfDoc) showViewer(); else showScreen('upload-screen');
+}
+
+// Crop canvas events
+const cropCanvas=document.getElementById('crop-canvas');
+const cropSelBox=document.getElementById('crop-sel-box');
+let cropStart={x:0,y:0};
+
+cropCanvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const r=cropCanvas.getBoundingClientRect();
+  const t=e.touches[0];
+  cropStart={x:t.clientX-r.left,y:t.clientY-r.top};
+  cropSelX=cropStart.x;cropSelY=cropStart.y;cropSelW=0;cropSelH=0;
+  cropSelBox.style.cssText=`display:block;left:${cropStart.x}px;top:${cropStart.y}px;width:0;height:0;`;
+},{passive:false});
+cropCanvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const r=cropCanvas.getBoundingClientRect();
+  const t=e.touches[0];
+  const cx=t.clientX-r.left, cy=t.clientY-r.top;
+  cropSelX=Math.min(cropStart.x,cx);cropSelY=Math.min(cropStart.y,cy);
+  cropSelW=Math.abs(cx-cropStart.x);cropSelH=Math.abs(cy-cropStart.y);
+  cropSelBox.style.left=cropSelX+'px';cropSelBox.style.top=cropSelY+'px';
+  cropSelBox.style.width=cropSelW+'px';cropSelBox.style.height=cropSelH+'px';
+},{passive:false});
 
 // RENDER
 async function renderPage(num){
-  if(!pdfDoc) return;
+  if(!pdfDoc)return;
   if(renderTask){try{renderTask.cancel();}catch(_){}renderTask=null;}
   const page=await pdfDoc.getPage(num);
   const dpr=Math.max(window.devicePixelRatio||2,3);
   const vp=page.getViewport({scale:currentScale*dpr});
-  pdfCanvas.width=vp.width; pdfCanvas.height=vp.height;
+  pdfCanvas.width=vp.width;pdfCanvas.height=vp.height;
   const dw=vp.width/dpr,dh=vp.height/dpr;
-  pdfCanvas.style.width=dw+'px'; pdfCanvas.style.height=dh+'px';
-  selCanvas.width=vp.width; selCanvas.height=vp.height;
-  selCanvas.style.width=dw+'px'; selCanvas.style.height=dh+'px';
+  pdfCanvas.style.width=dw+'px';pdfCanvas.style.height=dh+'px';
+  selCanvas.width=vp.width;selCanvas.height=vp.height;
+  selCanvas.style.width=dw+'px';selCanvas.style.height=dh+'px';
   renderTask=page.render({canvasContext:ctx,viewport:vp});
-  await renderTask.promise; renderTask=null;
+  await renderTask.promise;renderTask=null;
   document.getElementById('page-info').textContent=num+'/'+totalPages;
   document.getElementById('btn-prev').disabled=num<=1;
   document.getElementById('btn-next').disabled=num>=totalPages;
@@ -388,7 +519,7 @@ function zoomIn(){currentScale=Math.min(currentScale*1.05,baseScale*6);renderPag
 function zoomOut(){currentScale=Math.max(currentScale/1.05,baseScale*0.4);renderPage(currentPage);}
 function zoomReset(){currentScale=baseScale;renderPage(currentPage);}
 
-// SELECT + PINCH
+// SELECT + PINCH — seç modunda 1 parmak seç, 2 parmak zoom+kaydır
 selCanvas.addEventListener('touchstart',e=>{
   if(e.touches.length>=2){
     selecting=false;selBox.style.display='none';pinching=true;
@@ -400,6 +531,7 @@ selCanvas.addEventListener('touchstart',e=>{
   const p=getPos(e);startX=curX=p.cx;startY=curY=p.cy;
   selBox.style.cssText='display:block;left:'+p.rx+'px;top:'+p.ry+'px;width:0;height:0;';
 },{passive:false});
+
 selCanvas.addEventListener('touchmove',e=>{
   if(e.touches.length>=2){
     selecting=false;selBox.style.display='none';
@@ -415,10 +547,17 @@ selCanvas.addEventListener('touchmove',e=>{
   selBox.style.left=Math.min(startX,curX)+'px';selBox.style.top=Math.min(startY,curY)+'px';
   selBox.style.width=Math.abs(curX-startX)+'px';selBox.style.height=Math.abs(curY-startY)+'px';
 },{passive:false});
+
+// Seç modunda kaydırma — 1 parmak tutulunca scroll
+const canvasWrap=document.getElementById('canvas-wrap');
+let scrolling=false,scrollStartX=0,scrollStartY=0,wrapScrollX=0,wrapScrollY=0;
+
 document.addEventListener('touchend',e=>{
   if(pinching&&(!e.touches||e.touches.length<2)){pinching=false;renderPage(currentPage);}
-  if(!selecting)return;selecting=false;selBox.style.display='none';cropSelection();
+  if(selecting){selecting=false;selBox.style.display='none';cropSelection();}
+  scrolling=false;
 });
+
 selCanvas.addEventListener('mousedown',e=>{if(!isSelectMode)return;selecting=true;const p=getPos(e);startX=curX=p.cx;startY=curY=p.cy;selBox.style.cssText='display:block;left:'+p.rx+'px;top:'+p.ry+'px;width:0;height:0;';});
 selCanvas.addEventListener('mousemove',e=>{if(!selecting)return;const p=getPos(e);curX=p.cx;curY=p.cy;selBox.style.left=Math.min(startX,curX)+'px';selBox.style.top=Math.min(startY,curY)+'px';selBox.style.width=Math.abs(curX-startX)+'px';selBox.style.height=Math.abs(curY-startY)+'px';});
 document.addEventListener('mouseup',e=>{if(!selecting)return;selecting=false;selBox.style.display='none';cropSelection();});
@@ -431,6 +570,7 @@ function getPos(e){
   const lh=parseFloat(selCanvas.style.height)||r.height;
   return{cx:rx*(lw/r.width),cy:ry*(lh/r.height),rx,ry};
 }
+
 function cropSelection(){
   const x=Math.min(startX,curX),y=Math.min(startY,curY);
   const w=Math.abs(curX-startX),h=Math.abs(curY-startY);
@@ -439,10 +579,10 @@ function cropSelection(){
   const tmp=document.createElement('canvas');
   tmp.width=Math.round(w*dpr);tmp.height=Math.round(h*dpr);
   tmp.getContext('2d').drawImage(pdfCanvas,Math.round(x*dpr),Math.round(y*dpr),Math.round(w*dpr),Math.round(h*dpr),0,0,Math.round(w*dpr),Math.round(h*dpr));
-  // JPEG ile sıkıştır (PNG'den %70 daha az yer kaplar)
-  selectedQuestions.push({dataUrl:tmp.toDataURL('image/jpeg', 0.85),pageNum:currentPage,w,h});
+  selectedQuestions.push({dataUrl:tmp.toDataURL('image/jpeg',0.85),pageNum:currentPage,w,h});
   updateQList();
 }
+
 function toggleMode(){
   isSelectMode=!isSelectMode;
   const btn=document.getElementById('btn-mode');
@@ -450,12 +590,40 @@ function toggleMode(){
   btn.className=isSelectMode?'primary':'';
   selCanvas.style.pointerEvents=isSelectMode?'auto':'none';
   selCanvas.style.cursor=isSelectMode?'crosshair':'default';
+  // Kaydır modunda canvas-wrap scroll aktif
+  canvasWrap.style.overflow=isSelectMode?'auto':'auto';
 }
+
+function undoLast(){
+  if(!selectedQuestions.length)return;
+  selectedQuestions.pop();
+  updateQList();
+}
+
+function shuffleQuestions(){
+  if(selectedQuestions.length<2)return;
+  for(let i=selectedQuestions.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [selectedQuestions[i],selectedQuestions[j]]=[selectedQuestions[j],selectedQuestions[i]];
+  }
+  updateQList();
+  if(confirm('Sorular karıştırıldı! Test oluşturmaya devam edelim mi?')) goSettings();
+}
+
+function shuffleAndRegen(){
+  for(let i=selectedQuestions.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [selectedQuestions[i],selectedQuestions[j]]=[selectedQuestions[j],selectedQuestions[i]];
+  }
+  generateTest();
+}
+
 function updateQList(){
   const list=document.getElementById('q-list');
   const count=selectedQuestions.length;
   ['q-count','q-count2','fab-count'].forEach(id=>document.getElementById(id).textContent=count);
   document.getElementById('btn-go').disabled=count===0;
+  document.getElementById('btn-undo').disabled=count===0;
   const isV=document.getElementById('viewer-screen').classList.contains('active');
   document.getElementById('fab').style.display=(count>0&&isV)?'flex':'none';
   list.innerHTML='';
@@ -468,6 +636,31 @@ function updateQList(){
     div.append(img,btn);list.appendChild(div);
   });
 }
+
+// ANS KEY MODAL
+function openAnkeyModal(){
+  const list=document.getElementById('anskey-list');
+  list.innerHTML='';
+  selectedQuestions.forEach((_,i)=>{
+    const div=document.createElement('div');div.className='ans-item';
+    const span=document.createElement('span');span.textContent=(i+1)+'. Soru';
+    const opts=document.createElement('div');opts.className='ans-opts';
+    ['A','B','C','D','E'].forEach(opt=>{
+      const btn=document.createElement('button');
+      btn.className='ans-opt'+(answerKey[i]===opt?' selected':'');
+      btn.textContent=opt;
+      btn.onclick=()=>{
+        answerKey[i]=opt;
+        opts.querySelectorAll('.ans-opt').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+      };
+      opts.appendChild(btn);
+    });
+    div.append(span,opts);list.appendChild(div);
+  });
+  document.getElementById('anskey-modal').classList.add('open');
+}
+function closeAnkeyModal(){document.getElementById('anskey-modal').classList.remove('open');}
 
 // GENERATE
 function generateTest(){
@@ -487,57 +680,66 @@ function generateTest(){
   const ansPage=document.getElementById('f-anspage').checked;
   const infoTbl=document.getElementById('f-infotable').checked;
   const showNote=document.getElementById('f-shownote').checked;
-  const colW=cols===2?'calc(50% - 5px)':'100%';
+  const showQr=document.getElementById('f-qrcode').checked;
 
-  // Save modal için doldur
+  // Save modal için
   if(subject) document.getElementById('sm-subject').value=subject;
   if(topic) document.getElementById('sm-topic').value=topic;
-  if(testno||title) document.getElementById('sm-title').value=testno||title;
+  if(testno||title) document.getElementById('sm-title').value=testno||title||'Test';
 
   let groups=[];
   if(perpage==='auto'){groups=[selectedQuestions];}
   else{const pp=parseInt(perpage);for(let i=0;i<selectedQuestions.length;i+=pp)groups.push(selectedQuestions.slice(i,i+pp));}
 
-  // Global başlangıç indeksi her grup için
-  let globalOffset=0;
-  let qHtmlAll='';
-
+  let globalOffset=0,qHtmlAll='';
   groups.forEach((grp,pi)=>{
     const pb=pi>0?'page-break-before:always;break-before:page;':'';
     const qBox=(q,num)=>`<div style="border:1px solid #ccc;border-radius:4px;padding:8px;
-      page-break-inside:avoid;break-inside:avoid;
-      background:#fafafa;margin-bottom:8px;overflow:hidden;">
+      page-break-inside:avoid;break-inside:avoid;background:#fafafa;margin-bottom:8px;overflow:hidden;">
       <div style="font-weight:700;font-size:10pt;margin-bottom:5px;display:flex;justify-content:space-between;">
-        <span>${num}. Soru</span>${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
+        <span>${num}. Soru</span>
+        <span style="display:flex;gap:8px;align-items:center;">
+          ${answerKey[num-1]?`<span style="background:#1a7fa8;color:#fff;border-radius:4px;padding:1px 8px;font-size:9pt;">Cevap: ${answerKey[num-1]}</span>`:''}
+          ${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
+        </span>
       </div>
       <img src="${q.dataUrl}" style="width:100%;display:block;border-radius:2px;"/>
       ${ansKey?`<div style="margin-top:5px;border:1px solid #ccc;border-radius:3px;height:26px;display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;">Cevap: ____</div>`:''}
     </div>`;
 
     if(cols===2){
-      // Sol ve sağ sütun ayrı — table-cell ile sayfa kesmesi önlenir
-      const leftItems=grp.filter((_,i)=>i%2===0);
-      const rightItems=grp.filter((_,i)=>i%2===1);
-      let leftHtml='', rightHtml='';
-      leftItems.forEach((q,i)=>{ leftHtml+=qBox(q, globalOffset+i*2+1); });
-      rightItems.forEach((q,i)=>{ rightHtml+=qBox(q, globalOffset+i*2+2); });
+      const left=grp.filter((_,i)=>i%2===0);
+      const right=grp.filter((_,i)=>i%2===1);
+      let lH='',rH='';
+      left.forEach((q,i)=>{lH+=qBox(q,globalOffset+i*2+1);});
+      right.forEach((q,i)=>{rH+=qBox(q,globalOffset+i*2+2);});
       qHtmlAll+=`<div style="${pb}display:table;width:100%;table-layout:fixed;">
-        <div style="display:table-cell;width:49%;vertical-align:top;padding-right:4px;">${leftHtml}</div>
-        <div style="display:table-cell;width:49%;vertical-align:top;padding-left:4px;">${rightHtml}</div>
+        <div style="display:table-cell;width:49%;vertical-align:top;padding-right:4px;">${lH}</div>
+        <div style="display:table-cell;width:49%;vertical-align:top;padding-left:4px;">${rH}</div>
       </div>`;
     } else {
-      let colHtml='';
-      grp.forEach((q,i)=>{ colHtml+=qBox(q, globalOffset+i+1); });
-      qHtmlAll+=`<div style="${pb}">${colHtml}</div>`;
+      let cH='';
+      grp.forEach((q,i)=>{cH+=qBox(q,globalOffset+i+1);});
+      qHtmlAll+=`<div style="${pb}">${cH}</div>`;
     }
     globalOffset+=grp.length;
   });
 
+  // Cevap anahtarı sayfası
+  const akItems=selectedQuestions.map((_,i)=>{
+    const ans=answerKey[i]||'';
+    return `<div style="min-width:70px;font-size:11pt;font-weight:700;border:1px solid #ccc;border-radius:4px;padding:4px 10px;text-align:center;background:${ans?'#e8f4f8':'#fff'}">${i+1}. ${ans||'____'}</div>`;
+  }).join('');
   const akHtml=ansPage?`<div style="page-break-before:always;padding-top:10mm;">
     <h2 style="text-align:center;font-size:13pt;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:12px;">CEVAP ANAHTARI</h2>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;">
-    ${selectedQuestions.map((_,i)=>`<span style="min-width:60px;font-size:11pt;font-weight:700;border:1px solid #ccc;border-radius:4px;padding:4px 10px;text-align:center;">${i+1}. ____</span>`).join('')}
-    </div></div>`:'';
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">${akItems}</div>
+  </div>`:'';
+
+  // QR kod
+  const qrHtml=showQr?`<div id="qr-placeholder" style="margin-top:10px;text-align:right;">
+    <div id="qrcode-div" style="display:inline-block;"></div>
+    <div style="font-size:8pt;color:#888;margin-top:2px;">Test QR Kodu</div>
+  </div>`:'';
 
   currentHtml=`<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"/>
 <style>
@@ -560,39 +762,66 @@ body{font-family:'Times New Roman',serif;font-size:11pt;color:#111}
     <div>
       ${school?`<div class="school">${school}</div>`:''}
       ${title?`<div class="title">${title}</div>`:''}
-      <div class="meta">
-        ${subject?`<b>Ders:</b> ${subject}`:''}${topic?` &nbsp;|&nbsp; <b>Konu:</b> ${topic}`:''}${date?` &nbsp;|&nbsp; ${date}`:''}
-      </div>
+      <div class="meta">${subject?`<b>Ders:</b> ${subject}`:''}${topic?` &nbsp;|&nbsp; <b>Konu:</b> ${topic}`:''}${date?` &nbsp;|&nbsp; ${date}`:''}</div>
     </div>
     ${testno?`<span class="badge">${testno}</span>`:''}
   </div>
+  ${qrHtml}
 </div>
-${infoTbl?`<table class="info-t"><tr>
-  <td class="lb">AD SOYAD</td><td style="width:35%"></td>
-  <td class="lb">SINIF / NO</td><td style="width:15%">${cls}</td>
-  <td class="lb">PUAN</td><td></td>
-</tr></table>`:''}
+${infoTbl?`<table class="info-t"><tr><td class="lb">AD SOYAD</td><td style="width:35%"></td><td class="lb">SINIF / NO</td><td style="width:15%">${cls}</td><td class="lb">PUAN</td><td></td></tr></table>`:''}
 ${showNote?`<div class="note">Not: Her soru ${pt} puandır. Toplam ${selectedQuestions.length} soru.</div>`:''}
 ${qHtmlAll}
 ${teacher?`<div class="sig">${teacher}</div>`:''}
 ${akHtml}
-</div></body></html>`;
+</div>${showQr?`<script>
+if(typeof QRCode!=='undefined'){
+  new QRCode(document.getElementById('qrcode-div'),{text:'${location.origin}',width:80,height:80});
+}
+<\/script>`:''}
+</body></html>`;
 
   document.getElementById('preview-frame').srcdoc=currentHtml;
   showPreview();
 }
 
-
-
-
-
-// LIBRARY — localStorage
-function openSaveModal(){
-  document.getElementById('save-modal').classList.add('open');
+// PRINT
+function doPrint(){
+  try{localStorage.removeItem('printHtml');localStorage.setItem('printHtml',currentHtml);}
+  catch(e){localStorage.clear();try{localStorage.setItem('printHtml',currentHtml);}catch(e2){}}
+  const base=location.href.split('?')[0].replace(/[^/]*$/,'');
+  location.href=base+'print.html';
 }
-function closeSaveModal(){
-  document.getElementById('save-modal').classList.remove('open');
+
+// SHARE
+async function sharePDF(){
+  try{
+    const blob=new Blob([currentHtml],{type:'text/html'});
+    const file=new File([blob],'test.html',{type:'text/html'});
+    if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({title:'Test Kağıdı',files:[file]});
+    } else if(navigator.share){
+      await navigator.share({title:'Test Kağıdı',text:'Test kağıdı hazırlandı',url:location.href});
+    } else { doPrint(); }
+  }catch(e){if(e.name!=='AbortError') doPrint();}
 }
+
+// EXPORT to Files (download)
+function exportToFiles(html, filename){
+  try{
+    const blob=new Blob([html],{type:'text/html'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=filename||'test.html';
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+  }catch(e){alert('Dışa aktarma başarısız: '+e.message);}
+}
+
+// LIBRARY
+function openSaveModal(){document.getElementById('save-modal').classList.add('open');}
+function closeSaveModal(){document.getElementById('save-modal').classList.remove('open');}
+
 function saveToLibrary(){
   const subject=document.getElementById('sm-subject').value.trim()||'Genel';
   const topic=document.getElementById('sm-topic').value.trim()||'Konu';
@@ -604,34 +833,24 @@ function saveToLibrary(){
     closeSaveModal();
     alert('✅ "'+title+'" kaydedildi!');
   }catch(e){
-    alert('Depolama alanı dolu! Eski testleri silin.');
+    localStorage.clear();
+    try{localStorage.setItem(key,JSON.stringify(item));closeSaveModal();alert('✅ Kaydedildi!');}
+    catch(e2){alert('Depolama doldu.');}
   }
-}
-function clearStorage(){
-  if(!confirm('Tüm kayıtlı testler ve geçici veriler silinecek. Emin misiniz?')) return;
-  localStorage.clear();
-  alert('✅ Temizlendi! Artık Yazdır/PDF çalışacak.');
-  loadLibrary();
 }
 
 function loadLibrary(){
   const search=(document.getElementById('lib-search').value||'').toLowerCase();
   const content=document.getElementById('lib-content');
-  // Tüm lib_ keylerini topla
   const items=[];
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(!k.startsWith('lib_'))continue;
+    if(!k||!k.startsWith('lib_'))continue;
     try{const v=JSON.parse(localStorage.getItem(k));if(v)items.push(v);}catch(_){}
   }
-  if(items.length===0){content.innerHTML='<div id="lib-empty">Henüz kayıtlı test yok.<br/>Test oluşturup 💾 Kaydet butonuyla ekleyin.</div>';return;}
-  // Filtrele
-  const filtered=items.filter(v=>
-    !search||v.subject.toLowerCase().includes(search)||
-    v.topic.toLowerCase().includes(search)||v.title.toLowerCase().includes(search)
-  );
-  if(filtered.length===0){content.innerHTML='<div id="lib-empty">Arama sonucu bulunamadı.</div>';return;}
-  // Ders → Konu grupla
+  if(!items.length){content.innerHTML='<div id="lib-empty">Henüz kayıtlı test yok.<br/>Test oluşturup 💾 Kaydet ile ekleyin.</div>';return;}
+  const filtered=items.filter(v=>!search||v.subject.toLowerCase().includes(search)||v.topic.toLowerCase().includes(search)||v.title.toLowerCase().includes(search));
+  if(!filtered.length){content.innerHTML='<div id="lib-empty">Sonuç bulunamadı.</div>';return;}
   const grouped={};
   filtered.forEach(v=>{
     if(!grouped[v.subject])grouped[v.subject]={};
@@ -640,22 +859,16 @@ function loadLibrary(){
   });
   let html='';
   Object.keys(grouped).sort().forEach(subj=>{
-    html+=`<div class="subject-block">
-      <div class="subject-header">📘 ${subj} <span>${Object.values(grouped[subj]).flat().length} test</span></div>
-      <div class="subject-body">`;
+    html+=`<div class="subject-block"><div class="subject-header">📘 ${subj} <span>${Object.values(grouped[subj]).flat().length}</span></div><div class="subject-body">`;
     Object.keys(grouped[subj]).sort().forEach(topic=>{
       const tests=grouped[subj][topic];
-      html+=`<div class="topic-block">
-        <div class="topic-header">📌 ${topic} <span>${tests.length}</span></div>
-        <div class="topic-tests">`;
+      html+=`<div class="topic-block"><div class="topic-header">📌 ${topic} <span>${tests.length}</span></div><div class="topic-tests">`;
       tests.sort((a,b)=>a.title.localeCompare(b.title)).forEach(t=>{
         html+=`<div class="test-item">
-          <div class="test-item-info">
-            <div class="test-item-title">${t.title}</div>
-            <div class="test-item-meta">${t.date}</div>
-          </div>
+          <div class="test-item-info"><div class="test-item-title">${t.title}</div><div class="test-item-meta">${t.date}</div></div>
           <div class="test-item-btns">
             <button class="btn-open" onclick="openLibTest('${t.key}')">📖 Aç</button>
+            <button class="btn-export" onclick="exportLibTest('${t.key}')">⬇️ İndir</button>
             <button class="btn-del" onclick="delLibTest('${t.key}')">🗑️</button>
           </div>
         </div>`;
@@ -666,6 +879,7 @@ function loadLibrary(){
   });
   content.innerHTML=html;
 }
+
 function openLibTest(key){
   try{
     const item=JSON.parse(localStorage.getItem(key));
@@ -677,69 +891,23 @@ function openLibTest(key){
     document.getElementById('tab-library').classList.remove('active');
   }catch(e){alert('Test açılamadı.');}
 }
+
+function exportLibTest(key){
+  try{
+    const item=JSON.parse(localStorage.getItem(key));
+    if(!item)return;
+    exportToFiles(item.html, item.title+'.html');
+  }catch(e){alert('Dışa aktarma başarısız.');}
+}
+
 function delLibTest(key){
   if(!confirm('Bu testi silmek istediğinize emin misiniz?'))return;
-  localStorage.removeItem(key);
-  loadLibrary();
+  localStorage.removeItem(key);loadLibrary();
 }
 
-// SHARE - Web Share API ile paylaş
-function doPrint(){
-  try {
-    // Önce sadece printHtml'i temizle ve kaydet
-    localStorage.removeItem('printHtml');
-    
-    // Hâlâ doluysa lib_ kayıtlarını temizle
-    try {
-      localStorage.setItem('printHtml', currentHtml);
-    } catch(e) {
-      // lib_ kayıtlarını sil
-      const keys = [];
-      for(let i=0;i<localStorage.length;i++){
-        const k=localStorage.key(i);
-        if(k&&k.startsWith('lib_')) keys.push(k);
-      }
-      keys.forEach(k=>localStorage.removeItem(k));
-      // Tekrar dene
-      localStorage.setItem('printHtml', currentHtml);
-    }
-    
-    const base = location.href.split('?')[0].replace(/[^/]*$/, '');
-    location.href = base + 'print.html';
-  } catch(e) {
-    // localStorage tamamen doldu, temizle
-    localStorage.clear();
-    try {
-      localStorage.setItem('printHtml', currentHtml);
-      const base = location.href.split('?')[0].replace(/[^/]*$/, '');
-      location.href = base + 'print.html';
-    } catch(e2) {
-      alert('Depolama alanı temizlendi. Tekrar deneyin.');
-    }
-  }
-}
-
-async function sharePDF(){
-  try {
-    const blob = new Blob([currentHtml], {type: 'text/html'});
-    const file = new File([blob], 'test.html', {type: 'text/html'});
-    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-      await navigator.share({
-        title: 'Test Kağıdı',
-        files: [file]
-      });
-    } else if(navigator.share){
-      await navigator.share({
-        title: 'Test Kağıdı',
-        text: 'Test kağıdı hazırlandı',
-        url: location.href
-      });
-    } else {
-      doPrint();
-    }
-  } catch(e) {
-    if(e.name !== 'AbortError') doPrint();
-  }
+function clearStorage(){
+  if(!confirm('Tüm veriler silinecek. Emin misiniz?'))return;
+  localStorage.clear();alert('✅ Temizlendi!');loadLibrary();
 }
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
