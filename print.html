@@ -13,7 +13,8 @@
       display:flex;align-items:center;gap:10px;
     }
     #btn-back{background:rgba(255,255,255,.25);color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
-    #info{flex:1;font-size:13px;text-align:center;line-height:1.4;}
+    #btn-print-now{background:#fff;color:#1a7fa8;border:none;border-radius:20px;padding:8px 16px;font-size:14px;font-weight:700;cursor:pointer;}
+    #info{flex:1;font-size:12px;text-align:center;line-height:1.4;opacity:.9;}
     #wrap{background:#fff;margin:12px;border-radius:8px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.1);}
     /* Soru kutuları */
     .q-box{border:1px solid #ccc;border-radius:4px;padding:8px;background:#fafafa;margin-bottom:10px;page-break-inside:avoid;break-inside:avoid;}
@@ -36,7 +37,9 @@
 <body>
   <div id="toolbar">
     <button id="btn-back" onclick="history.back()">← Geri</button>
-    <div id="info">⬆️ Paylaş → <b>PDF Olarak Kaydet</b> seç</div>
+    <div id="info">⬆️ Paylaş → PDF Olarak Kaydet</div>
+    <button id="btn-print-now" onclick="window.print()">🖨️ Yazdır</button>
+    <button onclick="window.print()" style="background:#fff;color:#1a7fa8;border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">🖨️ Yazdır</button>
   </div>
   <div id="wrap">Yükleniyor...</div>
 
