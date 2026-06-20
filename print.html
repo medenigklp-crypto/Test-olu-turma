@@ -53,7 +53,7 @@
 
   <script>
     // sessionStorage'dan HTML al
-    const html = sessionStorage.getItem('printHtml');
+    const html = localStorage.getItem('printHtml');
     if(html){
       document.getElementById('preview').srcdoc = html;
     } else {
@@ -62,5 +62,3 @@
   </script>
 </body>
 </html>
-
-
