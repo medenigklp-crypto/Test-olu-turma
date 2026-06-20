@@ -255,6 +255,7 @@
 <div id="library-screen" class="screen">
   <h2>📚 Test Kütüphanesi</h2>
   <input class="lib-search" id="lib-search" placeholder="🔍 Ara..." oninput="loadLibrary()"/>
+  <button onclick="clearStorage()" style="width:100%;background:#fee;border:1px solid #fcc;border-radius:8px;padding:10px;color:#c00;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:12px;">🗑️ Depolamayı Temizle (Sorun varsa)</button>
   <div id="lib-content"><div id="lib-empty">Henüz kayıtlı test yok.<br/>Test oluşturup 💾 Kaydet butonuyla ekleyin.</div></div>
 </div>
 
@@ -438,7 +439,8 @@ function cropSelection(){
   const tmp=document.createElement('canvas');
   tmp.width=Math.round(w*dpr);tmp.height=Math.round(h*dpr);
   tmp.getContext('2d').drawImage(pdfCanvas,Math.round(x*dpr),Math.round(y*dpr),Math.round(w*dpr),Math.round(h*dpr),0,0,Math.round(w*dpr),Math.round(h*dpr));
-  selectedQuestions.push({dataUrl:tmp.toDataURL('image/png'),pageNum:currentPage,w,h});
+  // JPEG ile sıkıştır (PNG'den %70 daha az yer kaplar)
+  selectedQuestions.push({dataUrl:tmp.toDataURL('image/jpeg', 0.85),pageNum:currentPage,w,h});
   updateQList();
 }
 function toggleMode(){
@@ -605,6 +607,13 @@ function saveToLibrary(){
     alert('Depolama alanı dolu! Eski testleri silin.');
   }
 }
+function clearStorage(){
+  if(!confirm('Tüm kayıtlı testler ve geçici veriler silinecek. Emin misiniz?')) return;
+  localStorage.clear();
+  alert('✅ Temizlendi! Artık Yazdır/PDF çalışacak.');
+  loadLibrary();
+}
+
 function loadLibrary(){
   const search=(document.getElementById('lib-search').value||'').toLowerCase();
   const content=document.getElementById('lib-content');
@@ -677,13 +686,36 @@ function delLibTest(key){
 // SHARE - Web Share API ile paylaş
 function doPrint(){
   try {
-    // HTML'i localStorage'a kaydet (sessionStorage PWA'da çalışmıyor)
-    localStorage.setItem('printHtml', currentHtml);
-    // print.html sayfasına git
+    // Önce sadece printHtml'i temizle ve kaydet
+    localStorage.removeItem('printHtml');
+    
+    // Hâlâ doluysa lib_ kayıtlarını temizle
+    try {
+      localStorage.setItem('printHtml', currentHtml);
+    } catch(e) {
+      // lib_ kayıtlarını sil
+      const keys = [];
+      for(let i=0;i<localStorage.length;i++){
+        const k=localStorage.key(i);
+        if(k&&k.startsWith('lib_')) keys.push(k);
+      }
+      keys.forEach(k=>localStorage.removeItem(k));
+      // Tekrar dene
+      localStorage.setItem('printHtml', currentHtml);
+    }
+    
     const base = location.href.split('?')[0].replace(/[^/]*$/, '');
     location.href = base + 'print.html';
   } catch(e) {
-    alert('Hata: ' + e.message);
+    // localStorage tamamen doldu, temizle
+    localStorage.clear();
+    try {
+      localStorage.setItem('printHtml', currentHtml);
+      const base = location.href.split('?')[0].replace(/[^/]*$/, '');
+      location.href = base + 'print.html';
+    } catch(e2) {
+      alert('Depolama alanı temizlendi. Tekrar deneyin.');
+    }
   }
 }
 
