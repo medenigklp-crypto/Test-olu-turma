@@ -186,7 +186,7 @@
     </div>
   </div>
   <div class="check-row"><input type="checkbox" id="f-infotable" checked/><label for="f-infotable">Ad Soyad / Sınıf / Puan tablosu göster</label></div>
-  <div class="check-row"><input type="checkbox" id="f-shownote" checked/><label for="f-shownote">Not satırını göster (Her soru X puan...)</label></div>
+  <div class="check-row"><input type="checkbox" id="f-shownote"/><label for="f-shownote">Not satırını göster (Her soru X puan...)</label></div>
   <div class="check-row"><input type="checkbox" id="f-showpt"/><label for="f-showpt">Her soruda puan göster</label></div>
   <div class="check-row"><input type="checkbox" id="f-anskey"/><label for="f-anskey">Her soruya cevap kutusu ekle</label></div>
   <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Sona cevap anahtarı sayfası ekle</label></div>
@@ -533,17 +533,34 @@ ${akHtml}
 }
 
 function doPrint(){
-  const w = window.open('', '_blank');
-  if(!w){
-    alert('Pop-up engellendi!\nSafari → Ayarlar → Safari → Pop-up\'ları Engelle → Kapat');
-    return;
-  }
-  w.document.open();
-  w.document.write(window._printHtml);
-  w.document.close();
-  setTimeout(function(){
-    try{ w.focus(); w.print(); } catch(e){}
-  }, 800);
+  // Gizli iframe oluştur, içine yaz, yüklenince yazdır
+  const old = document.getElementById('print-iframe');
+  if(old) old.remove();
+  const ifr = document.createElement('iframe');
+  ifr.id = 'print-iframe';
+  ifr.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;';
+  document.body.appendChild(ifr);
+  ifr.onload = function(){
+    // Tüm görsellerin yüklenmesini bekle
+    const imgs = ifr.contentDocument.images;
+    let loaded = 0, total = imgs.length;
+    if(total === 0){
+      ifr.contentWindow.focus();
+      ifr.contentWindow.print();
+      return;
+    }
+    function imgDone(){
+      loaded++;
+      if(loaded >= total){
+        setTimeout(()=>{ ifr.contentWindow.focus(); ifr.contentWindow.print(); }, 200);
+      }
+    }
+    for(let i=0;i<total;i++){
+      if(imgs[i].complete) imgDone();
+      else { imgs[i].onload=imgDone; imgs[i].onerror=imgDone; }
+    }
+  };
+  ifr.srcdoc = window._printHtml;
 }
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
