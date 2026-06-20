@@ -6,77 +6,65 @@
   <title>Test Yazdır</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: sans-serif; background: #f0f4f8; }
+    body { font-family: sans-serif; background: #555; }
     #toolbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: #1a7fa8; color: #fff;
       padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top));
       display: flex; align-items: center; gap: 10px;
     }
-    #toolbar button {
-      border: none; border-radius: 20px; padding: 8px 18px;
-      font-size: 14px; font-weight: 700; cursor: pointer;
+    #btn-back {
+      background: rgba(255,255,255,0.25); color: #fff;
+      border: none; border-radius: 20px; padding: 8px 16px;
+      font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0;
     }
-    #btn-back { background: rgba(255,255,255,0.25); color: #fff; }
     #info {
-      background: #fff3cd; border: 1px solid #ffc107;
-      border-radius: 10px; margin: 12px 16px; padding: 12px 14px;
-      font-size: 13px; color: #856404; line-height: 1.6;
+      flex: 1; font-size: 13px; text-align: center; opacity: .9;
     }
-    #info b { display: block; margin-bottom: 4px; font-size: 14px; }
-    /* Test içeriği doğrudan sayfada göster — iframe yok */
-    #test-content {
-      margin: 16px;
+    .spacer { height: calc(60px + env(safe-area-inset-top)); }
+    /* iframe tam sayfa yüksekliğinde, scroll ile */
+    #print-frame {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 60px - env(safe-area-inset-top));
+      border: none;
       background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.1);
-      overflow: hidden;
     }
     @media print {
-      #toolbar, #info { display: none !important; }
-      #test-content { margin: 0; box-shadow: none; border-radius: 0; }
-      body { background: #fff; }
+      #toolbar { display: none !important; }
+      .spacer { display: none !important; }
+      #print-frame {
+        height: 100vh;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <div id="toolbar">
     <button id="btn-back" onclick="history.back()">← Geri</button>
-    <span style="flex:1;font-weight:700;font-size:15px;">📄 PDF Kaydet</span>
+    <div id="info">⬆️ Paylaş → <b>PDF Olarak Kaydet</b></div>
   </div>
-
-  <div style="height:calc(60px + env(safe-area-inset-top))"></div>
-
-  <div id="info">
-    <b>📄 PDF Olarak Kaydetmek için:</b>
-    Ekranın altındaki <b>⬆️ Paylaş</b> butonuna bas → <b>"PDF Olarak Kaydet"</b> seç ✅
-  </div>
-
-  <div id="test-content"></div>
-
-  <div style="height:40px"></div>
+  <div class="spacer"></div>
+  <iframe id="print-frame"></iframe>
 
   <script>
     const html = localStorage.getItem('printHtml');
+    const ifr = document.getElementById('print-frame');
     if(html){
-      // HTML içinden body içeriğini çıkar ve doğrudan sayfaya ekle
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      
-      // Style'ları al
-      const styles = doc.querySelectorAll('style');
-      styles.forEach(s => {
-        const newStyle = document.createElement('style');
-        newStyle.textContent = s.textContent;
-        document.head.appendChild(newStyle);
-      });
-      
-      // Body içeriğini al
-      const content = doc.body.innerHTML;
-      document.getElementById('test-content').innerHTML = content;
+      // Görselleri yüklemek için srcdoc kullan
+      ifr.srcdoc = html;
+      // iframe yüklendikten sonra yüksekliği içeriğe göre ayarla
+      ifr.onload = function(){
+        try {
+          const h = ifr.contentDocument.documentElement.scrollHeight;
+          ifr.style.height = Math.max(h, window.innerHeight) + 'px';
+        } catch(e) {}
+      };
     } else {
-      document.getElementById('test-content').innerHTML = 
-        '<div style="padding:20px;text-align:center;color:#888;">⚠️ İçerik bulunamadı. Geri dönüp tekrar deneyin.</div>';
+      document.body.innerHTML += '<div style="padding:40px;text-align:center;color:#fff;font-size:16px;">⚠️ İçerik bulunamadı. Geri dönüp tekrar deneyin.</div>';
     }
   </script>
 </body>
