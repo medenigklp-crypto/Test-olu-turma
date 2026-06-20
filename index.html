@@ -242,7 +242,7 @@
     <h2>Önizleme</h2>
     <div id="preview-actions">
       <button id="btn-back-preview" onclick="showSettings()">← Geri</button>
-      <button id="btn-print">⬇️ İndir/PDF</button>
+      <button id="btn-print">🌐 Aç & Yazdır</button>
       <button id="btn-share" onclick="sharePDF()" style="background:#9b59b6;color:#fff;">📤 Paylaş</button>
       <button id="btn-save-lib" onclick="openSaveModal()">💾 Kaydet</button>
       <button id="btn-new" onclick="startNew()">🔄 Yeni</button>
@@ -580,27 +580,22 @@ ${akHtml}
   showPreview();
 }
 
-// PRINT/PDF - HTML dosyası olarak indir, Safari'de aç ve yazdır
+// PRINT/PDF - data URI ile yeni sekmede aç, Safari oradan PDF kaydeder
 function doPrint(){
-  // Yöntem 1: data URI ile yeni sekme
   try {
-    const encoded = encodeURIComponent(currentHtml);
-    const dataUri = 'data:text/html;charset=utf-8,' + encoded;
-    location.href = dataUri;
-    return;
-  } catch(e) {}
-  
-  // Yöntem 2: Blob download
-  try {
-    const blob = new Blob([currentHtml], {type: 'text/html'});
-    const url = URL.createObjectURL(blob);
+    // HTML'i base64'e çevir
+    const b64 = btoa(unescape(encodeURIComponent(currentHtml)));
+    const dataUri = 'data:text/html;base64,' + b64;
+    // location.href ile mevcut sekmede aç — Safari bunu PDF'e çevirebilir
     const a = document.createElement('a');
-    a.href = url;
-    a.download = 'test.html';
+    a.href = dataUri;
+    a.target = '_blank';
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   } catch(e) {
-    alert('PDF kaydetmek için:\n1. Önizleme ekranını ekran görüntüsü alın\nveya\n2. Tarayıcı menüsü (⋯) → Sayfayı Paylaş → PDF\'e Aktar');
+    // Fallback: paylaş
+    sharePDF();
   }
 }
 
