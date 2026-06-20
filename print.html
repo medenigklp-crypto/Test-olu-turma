@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Test Yazdır</title>
   <style>
-    body { margin: 0; font-family: sans-serif; background: #f0f4f8; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f0f4f8; }
     #toolbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       background: #1a7fa8; color: #fff;
@@ -17,47 +18,65 @@
       font-size: 14px; font-weight: 700; cursor: pointer;
     }
     #btn-back { background: rgba(255,255,255,0.25); color: #fff; }
-    #btn-print { background: #fff; color: #1a7fa8; flex: 1; }
     #info {
       background: #fff3cd; border: 1px solid #ffc107;
-      border-radius: 10px; margin: 80px 16px 12px; padding: 12px 14px;
+      border-radius: 10px; margin: 12px 16px; padding: 12px 14px;
       font-size: 13px; color: #856404; line-height: 1.6;
     }
     #info b { display: block; margin-bottom: 4px; font-size: 14px; }
-    #content-wrap {
-      margin: 0 8px 20px; border-radius: 8px; overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0,0,0,.15);
+    /* Test içeriği doğrudan sayfada göster — iframe yok */
+    #test-content {
+      margin: 16px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.1);
+      overflow: hidden;
     }
-    iframe { width: 100%; height: 80vh; border: none; display: block; }
     @media print {
       #toolbar, #info { display: none !important; }
-      #content-wrap { margin: 0; box-shadow: none; }
-      iframe { height: 100vh; }
+      #test-content { margin: 0; box-shadow: none; border-radius: 0; }
+      body { background: #fff; }
     }
   </style>
 </head>
 <body>
   <div id="toolbar">
     <button id="btn-back" onclick="history.back()">← Geri</button>
-    <button id="btn-print" onclick="document.getElementById('preview').contentWindow.print()">🖨️ Yazdır / PDF Kaydet</button>
+    <span style="flex:1;font-weight:700;font-size:15px;">📄 PDF Kaydet</span>
   </div>
+
+  <div style="height:calc(60px + env(safe-area-inset-top))"></div>
 
   <div id="info">
     <b>📄 PDF Olarak Kaydetmek için:</b>
-    Safari'nin alt çubuğundaki <b>⬆️ Paylaş</b> butonuna bas → <b>"PDF Olarak Kaydet"</b> seç
+    Ekranın altındaki <b>⬆️ Paylaş</b> butonuna bas → <b>"PDF Olarak Kaydet"</b> seç ✅
   </div>
 
-  <div id="content-wrap">
-    <iframe id="preview"></iframe>
-  </div>
+  <div id="test-content"></div>
+
+  <div style="height:40px"></div>
 
   <script>
-    // sessionStorage'dan HTML al
     const html = localStorage.getItem('printHtml');
     if(html){
-      document.getElementById('preview').srcdoc = html;
+      // HTML içinden body içeriğini çıkar ve doğrudan sayfaya ekle
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      
+      // Style'ları al
+      const styles = doc.querySelectorAll('style');
+      styles.forEach(s => {
+        const newStyle = document.createElement('style');
+        newStyle.textContent = s.textContent;
+        document.head.appendChild(newStyle);
+      });
+      
+      // Body içeriğini al
+      const content = doc.body.innerHTML;
+      document.getElementById('test-content').innerHTML = content;
     } else {
-      document.getElementById('info').innerHTML = '<b>⚠️ İçerik bulunamadı.</b> Lütfen geri dönüp tekrar deneyin.';
+      document.getElementById('test-content').innerHTML = 
+        '<div style="padding:20px;text-align:center;color:#888;">⚠️ İçerik bulunamadı. Geri dönüp tekrar deneyin.</div>';
     }
   </script>
 </body>
