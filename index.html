@@ -242,7 +242,7 @@
     <h2>Önizleme</h2>
     <div id="preview-actions">
       <button id="btn-back-preview" onclick="showSettings()">← Geri</button>
-      <button id="btn-print" onclick="doPrint()">🖨️ Yazdır/PDF</button>
+      <button id="btn-print">🖨️ Yazdır/PDF</button>
       <button id="btn-save-lib" onclick="openSaveModal()">💾 Kaydet</button>
       <button id="btn-new" onclick="startNew()">🔄 Yeni</button>
     </div>
@@ -564,19 +564,28 @@ ${akHtml}
 
 // PRINT
 function doPrint(){
-  const old=document.getElementById('print-iframe');if(old)old.remove();
-  const ifr=document.createElement('iframe');
-  ifr.id='print-iframe';
-  ifr.style.cssText='position:fixed;top:-9999px;left:-9999px;width:210mm;height:297mm;border:none;';
-  document.body.appendChild(ifr);
-  ifr.onload=function(){
-    const imgs=ifr.contentDocument.images;
-    let loaded=0,total=imgs.length;
-    if(total===0){ifr.contentWindow.focus();ifr.contentWindow.print();return;}
-    function done(){loaded++;if(loaded>=total)setTimeout(()=>{ifr.contentWindow.focus();ifr.contentWindow.print();},200);}
-    for(let i=0;i<total;i++){if(imgs[i].complete)done();else{imgs[i].onload=done;imgs[i].onerror=done;}}
-  };
-  ifr.srcdoc=currentHtml;
+  const w = window.open('', '_blank');
+  if(!w){
+    // Pop-up engellendi, iframe dene
+    const old=document.getElementById('print-iframe');if(old)old.remove();
+    const ifr=document.createElement('iframe');
+    ifr.id='print-iframe';
+    ifr.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;border:none;z-index:9999;background:#fff;';
+    document.body.appendChild(ifr);
+    ifr.onload=function(){
+      setTimeout(()=>{
+        ifr.contentWindow.focus();
+        ifr.contentWindow.print();
+        setTimeout(()=>ifr.remove(),2000);
+      },600);
+    };
+    ifr.srcdoc=currentHtml;
+    return;
+  }
+  w.document.open();
+  w.document.write(currentHtml);
+  w.document.close();
+  setTimeout(()=>{ try{w.focus();w.print();}catch(e){} }, 800);
 }
 
 // LIBRARY — localStorage
@@ -670,6 +679,12 @@ function delLibTest(key){
 }
 
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+// Print butonu — Safari'de onclick yerine addEventListener daha güvenilir
+document.getElementById('btn-print').addEventListener('click', function(e){
+  e.preventDefault();
+  doPrint();
+});
 </script>
 </body>
 </html>
