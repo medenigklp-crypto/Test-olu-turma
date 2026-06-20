@@ -242,7 +242,8 @@
     <h2>Önizleme</h2>
     <div id="preview-actions">
       <button id="btn-back-preview" onclick="showSettings()">← Geri</button>
-      <button id="btn-print">🖨️ Yazdır/PDF</button>
+      <button id="btn-print">⬇️ İndir/PDF</button>
+      <button id="btn-share" onclick="sharePDF()" style="background:#9b59b6;color:#fff;">📤 Paylaş</button>
       <button id="btn-save-lib" onclick="openSaveModal()">💾 Kaydet</button>
       <button id="btn-new" onclick="startNew()">🔄 Yeni</button>
     </div>
@@ -495,22 +496,39 @@ function generateTest(){
   if(perpage==='auto'){groups=[selectedQuestions];}
   else{const pp=parseInt(perpage);for(let i=0;i<selectedQuestions.length;i+=pp)groups.push(selectedQuestions.slice(i,i+pp));}
 
-  let qHtmlAll='',gi=0;
+  // Global başlangıç indeksi her grup için
+  let globalOffset=0;
+  let qHtmlAll='';
+
   groups.forEach((grp,pi)=>{
-    const pb=pi>0?'page-break-before:always;':'';
-    qHtmlAll+=`<div style="${pb}display:flex;flex-wrap:wrap;gap:8px;padding-top:${pi>0?'10px':'0'}">`;
-    grp.forEach(q=>{
-      gi++;
-      qHtmlAll+=`<div style="width:${colW};border:1px solid #ccc;border-radius:4px;padding:8px;
-        page-break-inside:avoid;break-inside:avoid;display:table;background:#fafafa;margin-bottom:6px;">
-        <div style="font-weight:700;font-size:10pt;margin-bottom:5px;display:flex;justify-content:space-between;">
-          <span>${gi}. Soru</span>${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
-        </div>
-        <img src="${q.dataUrl}" style="width:100%;display:block;border-radius:2px;"/>
-        ${ansKey?`<div style="margin-top:5px;border:1px solid #ccc;border-radius:3px;height:26px;display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;">Cevap: ____</div>`:''}
+    const pb=pi>0?'page-break-before:always;break-before:page;':'';
+    const qBox=(q,num)=>`<div style="border:1px solid #ccc;border-radius:4px;padding:8px;
+      page-break-inside:avoid;break-inside:avoid;
+      background:#fafafa;margin-bottom:8px;overflow:hidden;">
+      <div style="font-weight:700;font-size:10pt;margin-bottom:5px;display:flex;justify-content:space-between;">
+        <span>${num}. Soru</span>${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
+      </div>
+      <img src="${q.dataUrl}" style="width:100%;display:block;border-radius:2px;"/>
+      ${ansKey?`<div style="margin-top:5px;border:1px solid #ccc;border-radius:3px;height:26px;display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;">Cevap: ____</div>`:''}
+    </div>`;
+
+    if(cols===2){
+      // Sol ve sağ sütun ayrı — table-cell ile sayfa kesmesi önlenir
+      const leftItems=grp.filter((_,i)=>i%2===0);
+      const rightItems=grp.filter((_,i)=>i%2===1);
+      let leftHtml='', rightHtml='';
+      leftItems.forEach((q,i)=>{ leftHtml+=qBox(q, globalOffset+i*2+1); });
+      rightItems.forEach((q,i)=>{ rightHtml+=qBox(q, globalOffset+i*2+2); });
+      qHtmlAll+=`<div style="${pb}display:table;width:100%;table-layout:fixed;">
+        <div style="display:table-cell;width:49%;vertical-align:top;padding-right:4px;">${leftHtml}</div>
+        <div style="display:table-cell;width:49%;vertical-align:top;padding-left:4px;">${rightHtml}</div>
       </div>`;
-    });
-    qHtmlAll+='</div>';
+    } else {
+      let colHtml='';
+      grp.forEach((q,i)=>{ colHtml+=qBox(q, globalOffset+i+1); });
+      qHtmlAll+=`<div style="${pb}">${colHtml}</div>`;
+    }
+    globalOffset+=grp.length;
   });
 
   const akHtml=ansPage?`<div style="page-break-before:always;padding-top:10mm;">
@@ -562,45 +580,28 @@ ${akHtml}
   showPreview();
 }
 
-// PRINT - mevcut sayfada CSS ile yazdır
+// PRINT/PDF - HTML dosyası olarak indir, Safari'de aç ve yazdır
 function doPrint(){
-  // Yazdırma için geçici style ekle
-  const style = document.createElement('style');
-  style.id = 'print-style';
-  style.textContent = `
-    @media print {
-      body > *:not(#print-content) { display: none !important; }
-      #print-content { display: block !important; position: fixed; top:0; left:0; width:100%; }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // Print div oluştur
-  const old = document.getElementById('print-content');
-  if(old) old.remove();
-  const div = document.createElement('div');
-  div.id = 'print-content';
-  div.style.cssText = 'display:none;';
-  div.innerHTML = currentHtml.replace(/<!DOCTYPE[^>]*>/i,'').replace(/<html[^>]*>/i,'').replace(/<\/html>/i,'').replace(/<head>[\s\S]*<\/head>/i,'').replace(/<\/?body[^>]*>/gi,'');
-  document.body.appendChild(div);
-
-  // Görseller yüklensin
-  const imgs = div.querySelectorAll('img');
-  let total = imgs.length, loaded = 0;
-  function tryPrint(){
-    window.print();
-    setTimeout(()=>{
-      div.remove();
-      style.remove();
-    }, 1000);
+  // Yöntem 1: data URI ile yeni sekme
+  try {
+    const encoded = encodeURIComponent(currentHtml);
+    const dataUri = 'data:text/html;charset=utf-8,' + encoded;
+    location.href = dataUri;
+    return;
+  } catch(e) {}
+  
+  // Yöntem 2: Blob download
+  try {
+    const blob = new Blob([currentHtml], {type: 'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'test.html';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('PDF kaydetmek için:\n1. Önizleme ekranını ekran görüntüsü alın\nveya\n2. Tarayıcı menüsü (⋯) → Sayfayı Paylaş → PDF\'e Aktar');
   }
-  if(total === 0){ tryPrint(); return; }
-  imgs.forEach(img=>{
-    if(img.complete){ loaded++; if(loaded>=total) tryPrint(); }
-    else{
-      img.onload = img.onerror = ()=>{ loaded++; if(loaded>=total) tryPrint(); };
-    }
-  });
 }
 
 // LIBRARY — localStorage
@@ -693,13 +694,32 @@ function delLibTest(key){
   loadLibrary();
 }
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+// SHARE - Web Share API ile paylaş
+async function sharePDF(){
+  try {
+    const blob = new Blob([currentHtml], {type: 'text/html'});
+    const file = new File([blob], 'test.html', {type: 'text/html'});
+    if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        title: 'Test Kağıdı',
+        files: [file]
+      });
+    } else if(navigator.share){
+      await navigator.share({
+        title: 'Test Kağıdı',
+        text: 'Test kağıdı hazırlandı',
+        url: location.href
+      });
+    } else {
+      doPrint();
+    }
+  } catch(e) {
+    if(e.name !== 'AbortError') doPrint();
+  }
+}
 
-// Print butonu — Safari'de onclick yerine addEventListener daha güvenilir
-document.getElementById('btn-print').addEventListener('click', function(e){
-  e.preventDefault();
-  doPrint();
-});
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+document.getElementById('btn-print').addEventListener('click', doPrint);
 </script>
 </body>
 </html>
