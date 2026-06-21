@@ -267,10 +267,19 @@
   <div class="check-row"><input type="checkbox" id="f-shownote"/><label for="f-shownote">Not satırı (Her soru X puan...)</label></div>
   <div class="check-row"><input type="checkbox" id="f-showpt"/><label for="f-showpt">Her soruda puan göster</label></div>
   <div class="check-row"><input type="checkbox" id="f-anskey"/><label for="f-anskey">Her soruya cevap kutusu</label></div>
+  <div class="check-row"><input type="checkbox" id="f-solspace" checked/><label for="f-solspace">Çözüm alanı ekle (boş alan)</label></div>
+  <div class="field"><label>Çözüm Alanı Yüksekliği</label>
+    <select id="f-solheight">
+      <option value="40">Küçük (40px)</option>
+      <option value="80" selected>Orta (80px)</option>
+      <option value="120">Büyük (120px)</option>
+      <option value="160">Çok Büyük (160px)</option>
+    </select>
+  </div>
   <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Cevap anahtarı sayfası</label></div>
   <div class="check-row"><input type="checkbox" id="f-qrcode"/><label for="f-qrcode">QR Kod ekle (paylaşım için)</label></div>
   <div class="btn-row">
-    <button style="background:#8e44ad;color:#fff;" onclick="openAnkeyModal()">📝 Cevap Anahtarı Doldur</button>
+    <button style="background:#8e44ad;color:#fff;" id="btn-anskey-toggle" onclick="toggleAnkeyModal()">📝 Cevap Anahtarı Doldur</button>
     <button style="background:#1a7fa8;color:#fff;" onclick="generateTest()">📄 Testi Oluştur</button>
   </div>
 </div>
@@ -638,6 +647,20 @@ function updateQList(){
 }
 
 // ANS KEY MODAL
+function toggleAnkeyModal(){
+  const btn = document.getElementById('btn-anskey-toggle');
+  const hasAnswers = Object.keys(answerKey).length > 0;
+  if(hasAnswers){
+    if(confirm('Cevap anahtarını tamamen kaldırmak istiyor musunuz?')){
+      answerKey = {};
+      btn.textContent = '📝 Cevap Anahtarı Doldur';
+      btn.style.background = '#8e44ad';
+    }
+  } else {
+    openAnkeyModal();
+  }
+}
+
 function openAnkeyModal(){
   const list=document.getElementById('anskey-list');
   list.innerHTML='';
@@ -660,7 +683,17 @@ function openAnkeyModal(){
   });
   document.getElementById('anskey-modal').classList.add('open');
 }
-function closeAnkeyModal(){document.getElementById('anskey-modal').classList.remove('open');}
+function closeAnkeyModal(){
+  document.getElementById('anskey-modal').classList.remove('open');
+  const btn = document.getElementById('btn-anskey-toggle');
+  if(Object.keys(answerKey).length > 0){
+    btn.textContent = '✅ Cevap Anahtarı Dolduruldu (Kaldır)';
+    btn.style.background = '#27ae60';
+  } else {
+    btn.textContent = '📝 Cevap Anahtarı Doldur';
+    btn.style.background = '#8e44ad';
+  }
+}
 
 // GENERATE
 function generateTest(){
@@ -677,6 +710,8 @@ function generateTest(){
   const pt=document.getElementById('f-point').value||Math.floor(100/(selectedQuestions.length||1));
   const showPt=document.getElementById('f-showpt').checked;
   const ansKey=document.getElementById('f-anskey').checked;
+  const solSpace=document.getElementById('f-solspace').checked;
+  const solHeight=document.getElementById('f-solheight').value;
   const ansPage=document.getElementById('f-anspage').checked;
   const infoTbl=document.getElementById('f-infotable').checked;
   const showNote=document.getElementById('f-shownote').checked;
@@ -694,18 +729,26 @@ function generateTest(){
   let globalOffset=0,qHtmlAll='';
   groups.forEach((grp,pi)=>{
     const pb=pi>0?'page-break-before:always;break-before:page;':'';
-    const qBox=(q,num)=>`<div style="border:1px solid #ccc;border-radius:4px;padding:8px;
-      page-break-inside:avoid;break-inside:avoid;background:#fafafa;margin-bottom:8px;overflow:hidden;">
+    const qBox=(q,num)=>`<div style="padding:8px 0;
+      page-break-inside:avoid;break-inside:avoid;margin-bottom:16px;overflow:hidden;">
       <div style="font-weight:700;font-size:10pt;margin-bottom:5px;display:flex;justify-content:space-between;">
         <span>${num}. Soru</span>
-        <span style="display:flex;gap:8px;align-items:center;">
-          ${answerKey[num-1]?`<span style="background:#1a7fa8;color:#fff;border-radius:4px;padding:1px 8px;font-size:9pt;">Cevap: ${answerKey[num-1]}</span>`:''}
-          ${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
-        </span>
+        ${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
       </div>
       <img src="${q.dataUrl}" style="width:100%;display:block;border-radius:2px;"/>
-      ${ansKey?`<div style="margin-top:5px;border:1px solid #ccc;border-radius:3px;height:26px;display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;">Cevap: ____</div>`:''}
+      ${solSpace?`<div style="margin-top:8px;min-height:${solHeight}px;border-bottom:1px dashed #ccc;"></div>`:''}
+      ${ansKey?`<div style="margin-top:6px;border:1px solid #ccc;border-radius:3px;height:26px;display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;">Cevap: ____</div>`:''}
     </div>`;
+
+    // O sayfadaki soruların cevap anahtarı
+    const pageAnsKey = Object.keys(answerKey).length > 0 ? 
+      grp.map((_,i) => {
+        const num = globalOffset + i + 1;
+        const ans = answerKey[num-1];
+        return ans ? `${num}-${ans}` : '';
+      }).filter(Boolean).join(' &nbsp; ') : '';
+    const pageAnsHtml = pageAnsKey ? 
+      `<div style="text-align:right;font-size:9pt;color:#555;margin-top:8px;font-weight:600;border-top:1px solid #eee;padding-top:4px;">${pageAnsKey}</div>` : '';
 
     if(cols===2){
       const left=grp.filter((_,i)=>i%2===0);
@@ -716,11 +759,11 @@ function generateTest(){
       qHtmlAll+=`<div style="${pb}display:table;width:100%;table-layout:fixed;">
         <div style="display:table-cell;width:49%;vertical-align:top;padding-right:4px;">${lH}</div>
         <div style="display:table-cell;width:49%;vertical-align:top;padding-left:4px;">${rH}</div>
-      </div>`;
+      </div>${pageAnsHtml}`;
     } else {
       let cH='';
       grp.forEach((q,i)=>{cH+=qBox(q,globalOffset+i+1);});
-      qHtmlAll+=`<div style="${pb}">${cH}</div>`;
+      qHtmlAll+=`<div style="${pb}">${cH}</div>${pageAnsHtml}`;
     }
     globalOffset+=grp.length;
   });
@@ -910,7 +953,12 @@ function clearStorage(){
   localStorage.clear();alert('✅ Temizlendi!');loadLibrary();
 }
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+// SW cache temizle ve yeniden kaydet
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(regs => {
+    regs.forEach(reg => reg.unregister());
+  });
+}
 </script>
 </body>
 </html>
