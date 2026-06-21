@@ -276,7 +276,7 @@
       <option value="160">Çok Büyük (160px)</option>
     </select>
   </div>
-  <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Cevap anahtarı sayfası</label></div>
+  <div class="check-row"><input type="checkbox" id="f-anspage"/><label for="f-anspage">Sona ayrı cevap anahtarı sayfası ekle</label></div>
   <div class="check-row"><input type="checkbox" id="f-qrcode"/><label for="f-qrcode">QR Kod ekle (paylaşım için)</label></div>
   <div class="btn-row">
     <button style="background:#8e44ad;color:#fff;" id="btn-anskey-toggle" onclick="toggleAnkeyModal()">📝 Cevap Anahtarı Doldur</button>
@@ -741,7 +741,7 @@ function generateTest(){
     </div>`;
 
     // O sayfadaki soruların cevap anahtarı
-    const pageAnsKey = Object.keys(answerKey).length > 0 ? 
+    const pageAnsKey = Object.keys(answerKey).length > 0 && !ansPage ?
       grp.map((_,i) => {
         const num = globalOffset + i + 1;
         const ans = answerKey[num-1];
