@@ -736,7 +736,7 @@ function generateTest(){
         ${showPt?`<span style="font-size:8pt;color:#888;">${pt} puan</span>`:''}
       </div>
       <img src="${q.dataUrl}" style="width:100%;display:block;border-radius:2px;"/>
-      ${solSpace?`<div style="margin-top:8px;min-height:${solHeight}px;border-bottom:1px dashed #ccc;"></div>`:''}
+      ${solSpace?`<div style="margin-top:8px;min-height:${solHeight}px;"></div>`:''}
       ${ansKey?`<div style="margin-top:6px;border:1px solid #ccc;border-radius:3px;height:26px;display:flex;align-items:center;padding:0 8px;font-size:9pt;color:#aaa;">Cevap: ____</div>`:''}
     </div>`;
 
@@ -756,14 +756,14 @@ function generateTest(){
       let lH='',rH='';
       left.forEach((q,i)=>{lH+=qBox(q,globalOffset+i*2+1);});
       right.forEach((q,i)=>{rH+=qBox(q,globalOffset+i*2+2);});
-      qHtmlAll+=`<div style="${pb}display:table;width:100%;table-layout:fixed;">
+      qHtmlAll+=`<div style="${pb}display:table;width:100%;table-layout:fixed;padding-top:${pi>0?'3cm':'0'}">
         <div style="display:table-cell;width:49%;vertical-align:top;padding-right:4px;">${lH}</div>
         <div style="display:table-cell;width:49%;vertical-align:top;padding-left:4px;">${rH}</div>
       </div>${pageAnsHtml}`;
     } else {
       let cH='';
       grp.forEach((q,i)=>{cH+=qBox(q,globalOffset+i+1);});
-      qHtmlAll+=`<div style="${pb}">${cH}</div>${pageAnsHtml}`;
+      qHtmlAll+=`<div style="${pb}padding-top:${pi>0?'3cm':'0'}">${cH}</div>${pageAnsHtml}`;
     }
     globalOffset+=grp.length;
   });
